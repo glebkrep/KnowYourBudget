@@ -26,6 +26,7 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
 
     )
 
+    // todo: store expenses categorised not to do that on ui thread every update
     private val _allExpenses: MutableLiveData<List<Expense>> = MutableLiveData()
     val allExpenses: LiveData<List<Expense>> = _allExpenses
 
