@@ -92,5 +92,5 @@ private fun TransactionItem(
 }
 
 private fun onTransItemClick(transaction: Transaction, viewModel: ExpensesViewModel) {
-    viewModel.revertTransactionFromIo(transaction)
+    viewModel.revertTransaction(transaction)
 }

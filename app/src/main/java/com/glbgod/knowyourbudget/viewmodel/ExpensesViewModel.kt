@@ -32,11 +32,8 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
     private val _allTransactions: MutableLiveData<List<Transaction>> = MutableLiveData()
     val allTransactions: LiveData<List<Transaction>> = _allTransactions
 
-    private val _stableIncome: MutableLiveData<Int> = MutableLiveData()
-    val stableIncome: LiveData<Int> = _stableIncome
-
-    private val _currentMoney: MutableLiveData<Int> = MutableLiveData()
-    val currentMoney: LiveData<Int> = _currentMoney
+    private val _currentBalance: MutableLiveData<CurrentBalance> = MutableLiveData()
+    val currentBalance: LiveData<CurrentBalance> = _currentBalance
 
     init {
         PreferencesProvider.init(application)
@@ -57,7 +54,6 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         _allExpenses.postValue(outdatedExpenses)
         val outdatedTransactions = transactionsRepository.getAllTransactions()
         _allTransactions.postValue(outdatedTransactions)
-        _stableIncome.postValue(PreferencesProvider.getStableIncome())
         val transactionsAfterCycleStart =
             transactionsRepository.getTransactionsAfter(PreferencesProvider.getCycleStartTime())
         var sumSpent = 0
@@ -68,7 +64,12 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                 sumSpent += trans.change
             }
         }
-        _currentMoney.postValue(PreferencesProvider.getStableIncome() + sumSpent)
+        _currentBalance.postValue(
+            CurrentBalance(
+                stableIncome = PreferencesProvider.getStableIncome(),
+                currentMoney = PreferencesProvider.getStableIncome() + sumSpent
+            )
+        )
 
         return AllBudgetData(expenses = outdatedExpenses, transactions = outdatedTransactions)
     }
@@ -149,7 +150,13 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         _allExpenses.postValue(allExpenses)
         val stableIncome = SensetiveData.getStableIncome()
         PreferencesProvider.saveStableIncome(stableIncome)
-        _stableIncome.postValue(PreferencesProvider.getStableIncome())
+
+        _currentBalance.postValue(
+            CurrentBalance(
+                stableIncome = PreferencesProvider.getStableIncome(),
+                currentMoney = 0
+            )
+        )
 
         val leftOverMoney = allExpenses.calculateLeftOver(stableIncome = stableIncome)
         setBudget(1, leftOverMoney)
@@ -228,25 +235,22 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun revertTransactionFromIo(transaction: Transaction) {
+    fun revertTransaction(transaction: Transaction) {
         viewModelScope.launch(Dispatchers.IO) {
-            revertTransaction(transaction)
-            getAndPostAll()
-        }
-    }
+            transactionsRepository.deleteById(transaction.id)
+            val expenseList = expensesRepository.getExpenseById(transaction.expenseId)
+            if (expenseList.isNotEmpty()) {
+                val expense = expenseList.first()
+                updateExpenseBalance(
+                    expense,
+                    expense.currentBalance + (-transaction.change),
+                    (-transaction.change),
+                    System.currentTimeMillis(),
+                    -1
+                )
+            }
 
-    private suspend fun revertTransaction(transaction: Transaction) {
-        transactionsRepository.deleteById(transaction.id)
-        val expenseList = expensesRepository.getExpenseById(transaction.expenseId)
-        if (expenseList.isNotEmpty()) {
-            val expense = expenseList.first()
-            updateExpenseBalance(
-                expense,
-                expense.currentBalance + (-transaction.change),
-                (-transaction.change),
-                System.currentTimeMillis(),
-                -1
-            )
+            getAndPostAll()
         }
     }
 
