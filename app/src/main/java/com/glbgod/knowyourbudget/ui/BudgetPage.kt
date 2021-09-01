@@ -26,6 +26,7 @@ import com.glbgod.knowyourbudget.ui.theme.RegularityStyle
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 import com.glbgod.knowyourbudget.utils.PreferencesProvider
 import com.glbgod.knowyourbudget.utils.Utils
+import com.glbgod.knowyourbudget.utils.toBeautifulString
 import com.glbgod.knowyourbudget.utils.toDateTime
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel
 
@@ -37,31 +38,18 @@ fun BudgetPage(
 ) {
     val scrollState = rememberScrollState()
     Column(Modifier.verticalScroll(scrollState)) {
-        Text(
-            "My expenses",
-            style = MaterialTheme.typography.h5,
-            modifier = Modifier.padding(UiConsts.padding)
-        )
         val items by viewModel.allExpenses.observeAsState(listOf())
         val totalBudget by viewModel.stableIncome.observeAsState()
         val moneyLeft by viewModel.currentMoney.observeAsState()
 
-        Text(
-            text = "Total Budget: $totalBudget",
-            modifier = Modifier.padding(UiConsts.padding)
-        )
-        Text(
-            text = "Money Left: $moneyLeft",
-            modifier = Modifier.padding(UiConsts.padding)
-        )
-        Text(
-            text = "Last cycle start: ${PreferencesProvider.getCycleStartTime().toDateTime()}",
-            modifier = Modifier.padding(UiConsts.padding)
-        )
-        Text(
-            text = "Now time: ${System.currentTimeMillis().toDateTime()}",
-            modifier = Modifier.padding(UiConsts.padding)
-        )
+        Column(Modifier.padding(UiConsts.padding).fillMaxWidth()) {
+            Text(
+                text = "${moneyLeft?.toBeautifulString()} out of ${totalBudget?.toBeautifulString()}",
+                modifier = Modifier.padding(UiConsts.padding)
+            )
+            LinearProgressIndicator(progress = (moneyLeft?.toFloat()?:1f)/(totalBudget?.toFloat()?:1f), Modifier.fillMaxWidth())
+        }
+
         val dailyItems = items.filter { it.regularity == ExpenseRegularity.DAILY.regularity }
         val weeklyItems = items.filter { it.regularity == ExpenseRegularity.WEEKLY.regularity }
         val monthlyItems =
@@ -238,11 +226,11 @@ fun ExpenseItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = expense.currentBalance.toString(),
+                    text = expense.currentBalance.toBeautifulString(),
                     Modifier,
                     fontSize = TextUnit(14F, TextUnitType.Sp)
                 )
-                Text(text = expense.budget.toString(), fontSize = TextUnit(14F, TextUnitType.Sp))
+                Text(text = expense.budget.toBeautifulString(), fontSize = TextUnit(14F, TextUnitType.Sp))
             }
             LinearProgressIndicator(progress = progress, Modifier.fillMaxWidth())
         }

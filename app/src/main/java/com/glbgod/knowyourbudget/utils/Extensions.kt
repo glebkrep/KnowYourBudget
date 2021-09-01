@@ -76,6 +76,22 @@ fun Long.toDateTime(): String {
     return formatter.format(calendar.time)
 }
 
+// todo rewrite
+fun Int.toBeautifulString():String{
+    return if (this>9999){
+        val remainder = (this%1000).toString()
+        val remainderZerosString = when (3-remainder.length){
+            1->"0"
+            2->"00"
+            3->"000"
+            else->""
+        }
+        val mainPart = this/1000
+        ("$mainPart $remainderZerosString$remainder")
+    }
+    else this.toString()
+}
+
 
 fun Long.plusDays(day: Int): Long {
     return this + (day * 24 * 60 * 60 * 1000)
