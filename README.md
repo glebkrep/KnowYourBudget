@@ -1,4 +1,4 @@
-## ~WIP~ KnowYourBudget
+## _WIP_ KnowYourBudget
 Budgeting android application made for personal use and convenience, since none of the apps on the market fill my needs.
 
 ### __v0.1 release:__
