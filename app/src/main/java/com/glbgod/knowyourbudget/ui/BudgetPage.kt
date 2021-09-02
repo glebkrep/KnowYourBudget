@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,10 +23,8 @@ import com.glbgod.knowyourbudget.expenses.data.ExpenseRegularity
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.RegularityStyle
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
-import com.glbgod.knowyourbudget.utils.PreferencesProvider
 import com.glbgod.knowyourbudget.utils.Utils
 import com.glbgod.knowyourbudget.utils.toBeautifulString
-import com.glbgod.knowyourbudget.utils.toDateTime
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel
 
 @Composable
@@ -38,22 +35,24 @@ fun BudgetPage(
 ) {
     val scrollState = rememberScrollState()
     Column(Modifier.verticalScroll(scrollState)) {
-        val items by viewModel.allExpenses.observeAsState(listOf())
-        val totalBudget by viewModel.stableIncome.observeAsState()
-        val moneyLeft by viewModel.currentMoney.observeAsState()
+        val allExpenses by viewModel.allExpenses.observeAsState(listOf())
+        val currentBalance by viewModel.currentBalance.observeAsState()
 
         Column(Modifier.padding(UiConsts.padding).fillMaxWidth()) {
             Text(
-                text = "${moneyLeft?.toBeautifulString()} out of ${totalBudget?.toBeautifulString()}",
+                text = "${currentBalance?.currentMoney?.toBeautifulString()} out of ${currentBalance?.stableIncome?.toBeautifulString()}",
                 modifier = Modifier.padding(UiConsts.padding)
             )
-            LinearProgressIndicator(progress = (moneyLeft?.toFloat()?:1f)/(totalBudget?.toFloat()?:1f), Modifier.fillMaxWidth())
+            LinearProgressIndicator(progress = (currentBalance?.currentMoney?.toFloat()?:1f)/(currentBalance?.stableIncome?.toFloat()?:1f), Modifier.fillMaxWidth())
         }
 
-        val dailyItems = items.filter { it.regularity == ExpenseRegularity.DAILY.regularity }
-        val weeklyItems = items.filter { it.regularity == ExpenseRegularity.WEEKLY.regularity }
+        // todo: move this calculation to viewModel and get categorised data from there
+        val dailyItems = allExpenses.filter { it.regularity == ExpenseRegularity.DAILY.regularity }
+        val weeklyItems = allExpenses.filter { it.regularity == ExpenseRegularity.WEEKLY.regularity }
         val monthlyItems =
-            items.filter { it.regularity == ExpenseRegularity.MONTHLY.regularity }
+            allExpenses.filter { it.regularity == ExpenseRegularity.MONTHLY.regularity }
+        //
+
         //daily
         ExpenseInOneRegularity(
             expenses = dailyItems,

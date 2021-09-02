@@ -12,7 +12,7 @@ data class Transaction(
     @ColumnInfo(name = "expense_id")
     val expenseId: Int,
     @ColumnInfo(name = "expense_name")
-    val name: String,
+    val expenseName: String,
     @ColumnInfo(name = "change")
     val change: Int,
     @ColumnInfo(name = "time")

@@ -1,10 +1,7 @@
 package com.glbgod.knowyourbudget.viewmodel
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.glbgod.knowyourbudget.expenses.ExpenseRepository
 import com.glbgod.knowyourbudget.expenses.ExpenseRoomDatabase
 import com.glbgod.knowyourbudget.expenses.data.Expense
@@ -14,6 +11,8 @@ import com.glbgod.knowyourbudget.transactions.data.Transaction
 import com.glbgod.knowyourbudget.transactions.data.TransactionCategory
 import com.glbgod.knowyourbudget.utils.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class ExpensesViewModel(application: Application) : AndroidViewModel(application) {
@@ -26,110 +25,99 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
 
     )
 
+    // todo: store expenses categorised not to do that on ui thread every update
     private val _allExpenses: MutableLiveData<List<Expense>> = MutableLiveData()
     val allExpenses: LiveData<List<Expense>> = _allExpenses
 
     private val _allTransactions: MutableLiveData<List<Transaction>> = MutableLiveData()
     val allTransactions: LiveData<List<Transaction>> = _allTransactions
 
-    private val _stableIncome: MutableLiveData<Int> = MutableLiveData()
-    val stableIncome: LiveData<Int> = _stableIncome
-
-    private val _currentMoney: MutableLiveData<Int> = MutableLiveData()
-    val currentMoney: LiveData<Int> = _currentMoney
+    private val _currentBalance: MutableLiveData<CurrentBalance> = MutableLiveData()
+    val currentBalance: LiveData<CurrentBalance> = _currentBalance
 
     init {
         PreferencesProvider.init(application)
+        viewModelScope.launch(Dispatchers.IO){
+            expensesRepository.getAllExpenses()
+                .map { allExpenses ->
+                    allExpenses
+                }
+                .collect { expenses->
+                    //todo:
+                    //  - improve performance here
+                    val leftOverMoney = expenses.calculateLeftOver(stableIncome = PreferencesProvider.getStableIncome())
+                    if (expenses.first { it.id == 1 }.budget !=leftOverMoney){
+                        updateBudget(1, leftOverMoney)
+                    }
+                    _allExpenses.postValue(expenses)
+                }
+        }
+        viewModelScope.launch(Dispatchers.IO){
+            transactionsRepository.getAllTransactions()
+                .map { allTransactions ->
+                    Debug.log("all transactions: $allTransactions")
+                    val viableTransactions = allTransactions.filter { it.time>=PreferencesProvider.getCycleStartTime() }
+                    viableTransactions
+                }
+                .collect { transactions->
+                    var sumSpent = 0
+                    for (trans in transactions) {
+                        if (trans.transactionCategory == TransactionCategory.SPENT.category) {
+                            sumSpent += trans.change
+                        } else if (trans.transactionCategory == TransactionCategory.INCREASE.category) {
+                            sumSpent += trans.change
+                        }
+                    }
+                    _currentBalance.postValue(
+                        CurrentBalance(
+                            stableIncome = PreferencesProvider.getStableIncome(),
+                            currentMoney = PreferencesProvider.getStableIncome() + sumSpent
+                        )
+                    )
+                    _allTransactions.postValue(transactions)
+                }
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
-            val data = getAndPostAll()
             val lastUpdateTime = PreferencesProvider.getLastUpdateTime()
             if (lastUpdateTime == 0L) {
                 firstAppStart()
             } else if (!lastUpdateTime.isToday()) {
-                // data needs updating since it was last calculated yesterday+
-                doRecalculation(lastUpdateTime, data.expenses)
+                doRecalculation(lastUpdateTime)
             }
         }
     }
 
-    private suspend fun getAndPostAll(): AllBudgetData {
-        val outdatedExpenses = expensesRepository.getAllExpenses()
-        _allExpenses.postValue(outdatedExpenses)
-        val outdatedTransactions = transactionsRepository.getAllTransactions()
-        _allTransactions.postValue(outdatedTransactions)
-        _stableIncome.postValue(PreferencesProvider.getStableIncome())
-        val transactionsAfterCycleStart =
-            transactionsRepository.getTransactionsAfter(PreferencesProvider.getCycleStartTime())
-        var sumSpent = 0
-        for (trans in transactionsAfterCycleStart) {
-            if (trans.transactionCategory == TransactionCategory.SPENT.category) {
-                sumSpent += trans.change
-            } else if (trans.transactionCategory == TransactionCategory.INCREASE.category) {
-                sumSpent += trans.change
-            }
-        }
-        _currentMoney.postValue(PreferencesProvider.getStableIncome() + sumSpent)
-
-        return AllBudgetData(expenses = outdatedExpenses, transactions = outdatedTransactions)
-    }
-
-    private suspend fun doRecalculation(lastUpdateTime: Long, outdatedExpenses: List<Expense>) {
+    private suspend fun doRecalculation(lastUpdateTime: Long) {
         val now = System.currentTimeMillis()
         val daysPassed = lastUpdateTime.daysPassed(now)
 
         val cycleStart = PreferencesProvider.getCycleStartTime()
         val weeksPassed = lastUpdateTime.weeksPassed(cycleStart, now)
 
-        for (expense in outdatedExpenses) {
-            when (expense.regularity) {
-                ExpenseRegularity.DAILY.regularity -> {
-                    for (day in 1..daysPassed) {
-                        val newIncrease = expense.budget * day
-                        val newDate = lastUpdateTime.plusDays(day.toInt())
-                        updateExpenseBalance(
-                            expense,
-                            (expense.currentBalance + (newIncrease.toInt())),
-                            (expense.budget),
-                            newDate,
-                            TransactionCategory.REGULAR.category
-                        )
-                    }
-                }
-                ExpenseRegularity.WEEKLY.regularity -> {
-                    for (week in 1..weeksPassed) {
-                        val newIncrease = expense.budget * week
-                        val newDate = lastUpdateTime.plusDays(week * 7)
-                        updateExpenseBalance(
-                            expense,
-                            (expense.currentBalance + (newIncrease)),
-                            (expense.budget),
-                            newDate,
-                            TransactionCategory.REGULAR.category
-                        )
-                    }
-                }
-                else -> {
-                }
-            }
+        if (daysPassed>0){
+            expensesRepository.updateRegularBalances(regularity = ExpenseRegularity.DAILY.regularity,daysPassed.toInt())
         }
-        getAndPostAll()
+        if (weeksPassed>0){
+            expensesRepository.updateRegularBalances(regularity = ExpenseRegularity.WEEKLY.regularity,weeksPassed)
+        }
         PreferencesProvider.saveLastUpdateTime(now)
     }
 
     private suspend fun updateExpenseBalance(
-        expense: Expense,
-        newBalance: Int,
-        change: Int,
+        expenseId: Int,
+        expenseName: String,
+        balanceUpdate: Int,
         date: Long,
         transactionCategory: Int
     ) {
-        expensesRepository.updateBalance(expense.id, newBalance)
+        expensesRepository.updateBalance(expenseId, balanceUpdate)
         if (transactionCategory != -1) {
             transactionsRepository.insert(
                 Transaction(
-                    expenseId = expense.id,
-                    name = expense.name,
-                    change = change,
+                    expenseId = expenseId,
+                    expenseName = expenseName,
+                    change = balanceUpdate,
                     time = date,
                     transactionCategory = transactionCategory
                 )
@@ -145,130 +133,91 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         for (expense in SensetiveData.firstInitData()) {
             expensesRepository.insert(expense)
         }
-        val allExpenses = expensesRepository.getAllExpenses()
-        _allExpenses.postValue(allExpenses)
         val stableIncome = SensetiveData.getStableIncome()
         PreferencesProvider.saveStableIncome(stableIncome)
-        _stableIncome.postValue(PreferencesProvider.getStableIncome())
-
-        val leftOverMoney = allExpenses.calculateLeftOver(stableIncome = stableIncome)
-        setBudget(1, leftOverMoney)
-
+        _currentBalance.postValue(
+            CurrentBalance(
+                stableIncome = PreferencesProvider.getStableIncome(),
+                currentMoney = 0
+            )
+        )
         PreferencesProvider.saveCycleStartTime(now)
         PreferencesProvider.saveLastUpdateTime(now)
     }
 
     fun moneyIncrease(isBudgetRestart: Boolean, change: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val expenses = _allExpenses.value ?: listOf()
-
             if (isBudgetRestart) {
-                for (expense in expenses) {
-                    updateExpenseBalance(
-                        expense,
-                        (expense.currentBalance + expense.budget),
-                        expense.budget,
-                        System.currentTimeMillis(),
-                        TransactionCategory.REGULAR.category
-                    )
-                }
+                expensesRepository.updateAllBalances()
+                //todo [release v0.2] add transactions for all updates?
                 val now = System.currentTimeMillis()
                 PreferencesProvider.saveCycleStartTime(now)
                 PreferencesProvider.saveLastUpdateTime(now)
             } else {
-                for (expense in expenses) {
-                    if (expense.id == 1) {
-                        updateExpenseBalance(
-                            expense,
-                            (expense.currentBalance + change.toInt()),
-                            change.toInt(),
-                            System.currentTimeMillis(),
-                            TransactionCategory.INCREASE.category
-                        )
-                        break
-                    }
-                }
+                updateExpenseBalance(
+                    expenseId = 1,
+                    expenseName = "Left over money",
+                    balanceUpdate = change.toInt(),
+                    date = System.currentTimeMillis(),
+                    transactionCategory = TransactionCategory.INCREASE.category
+                )
             }
-            getAndPostAll()
         }
     }
+
 
     fun moneyDecrease(expense: Expense, change: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             updateExpenseBalance(
-                expense,
-                (expense.currentBalance - change.toInt()),
-                -change.toInt(),
-                System.currentTimeMillis(),
-                TransactionCategory.SPENT.category
+                expenseId = expense.id,
+                expenseName = expense.name,
+                balanceUpdate = -change.toInt(),
+                date = System.currentTimeMillis(),
+                transactionCategory = TransactionCategory.SPENT.category
             )
-            getAndPostAll()
         }
     }
 
     fun setBudget(expense: Expense, newBudget: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            setBudget(expenseId = expense.id, newBudget)
+            Debug.log("set budget id: ${expense.id} budget: $newBudget")
+            updateBudget(expense.id,newBudget)
         }
     }
 
-    private suspend fun setBudget(expenseId: Int, newBudget: Int) {
-        Debug.log("set budget id: $expenseId budget: $newBudget")
-        expensesRepository.updateBudget(expenseId, newBudget = newBudget)
-        if (expenseId != 1) {
-            setBudget(
-                1,
-                expensesRepository.getAllExpenses()
-                    .calculateLeftOver(PreferencesProvider.getStableIncome())
-            )
-            return
-        } else {
-            Debug.log("get and post all")
-            getAndPostAll()
-        }
+    private suspend fun updateBudget(expenseId: Int, newBudget: Int){
+        expensesRepository.updateBudget(expenseId = expenseId, newBudget = newBudget)
     }
 
-    fun revertTransactionFromIo(transaction: Transaction) {
+    fun revertTransaction(transaction: Transaction) {
         viewModelScope.launch(Dispatchers.IO) {
-            revertTransaction(transaction)
-            getAndPostAll()
-        }
-    }
-
-    private suspend fun revertTransaction(transaction: Transaction) {
-        transactionsRepository.deleteById(transaction.id)
-        val expenseList = expensesRepository.getExpenseById(transaction.expenseId)
-        if (expenseList.isNotEmpty()) {
-            val expense = expenseList.first()
+            transactionsRepository.deleteById(transaction.id)
             updateExpenseBalance(
-                expense,
-                expense.currentBalance + (-transaction.change),
-                (-transaction.change),
-                System.currentTimeMillis(),
+                expenseId = transaction.expenseId,
+                expenseName = transaction.expenseName,
+                balanceUpdate = -transaction.change,
+                date = System.currentTimeMillis(),
                 -1
             )
         }
     }
 
-    fun sendMoneyToOther(expense: Expense, sum: Int) {
+    fun sendMoneyToOther(expenseId: Int, expenseName: String, sum: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             updateExpenseBalance(
-                expense,
-                (expense.currentBalance - sum),
-                -sum,
-                System.currentTimeMillis(),
-                TransactionCategory.SPENT.category
+                expenseId = expenseId,
+                expenseName = expenseName,
+                balanceUpdate = -sum,
+                date = System.currentTimeMillis(),
+                transactionCategory = TransactionCategory.SPENT.category
             )
-            val allExpenses = expensesRepository.getAllExpenses()
-            val otherExpense = allExpenses.filter { it.id == 1 }.first()
             updateExpenseBalance(
-                otherExpense,
-                (otherExpense.currentBalance + sum),
-                sum,
-                System.currentTimeMillis(),
-                TransactionCategory.INCREASE.category
+                expenseId = 1,
+                expenseName = "Left over money",
+                balanceUpdate = sum,
+                date = System.currentTimeMillis(),
+                transactionCategory = TransactionCategory.INCREASE.category
             )
-            getAndPostAll()
         }
     }
 
