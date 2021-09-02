@@ -5,16 +5,10 @@ import com.glbgod.knowyourbudget.expenses.data.ExpensesDao
 
 class ExpenseRepository(private val expensesDao: ExpensesDao) {
 
-    suspend fun getAllExpenses() = expensesDao.getAllItems()
+    fun getAllExpenses() = expensesDao.getAllItems()
 
-    suspend fun updateBalance(id: Int, updatedBalance: Int) {
-        expensesDao.updateCurrentBalance(id, updatedBalance)
-    }
-
-    suspend fun getExpenseById(id: Int) = expensesDao.getExpenseById(id)
-
-    suspend fun clearAll() {
-        expensesDao.clearAll()
+    suspend fun updateBalance(id: Int, balanceUpdate: Int) {
+        expensesDao.updateCurrentBalance(id, balanceUpdate)
     }
 
     suspend fun insert(expense: Expense) {
@@ -23,6 +17,14 @@ class ExpenseRepository(private val expensesDao: ExpensesDao) {
 
     suspend fun updateBudget(expenseId: Int, newBudget: Int) {
         expensesDao.updateBudget(expenseId, newBudget)
+    }
+
+    suspend fun updateAllBalances() {
+        expensesDao.updateAllBalances()
+    }
+
+    suspend fun updateRegularBalances(regularity:Int,budgetsAdded:Int) {
+        expensesDao.updateRegularBalances(budgetsAdded = budgetsAdded,regularity = regularity)
     }
 
 }

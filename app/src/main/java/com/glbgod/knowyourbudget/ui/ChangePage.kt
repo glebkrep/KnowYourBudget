@@ -232,7 +232,7 @@ private fun onTransactionClick(
 }
 
 private fun sendMoneyToOther(sum: Int, expense: Expense, viewModel: ExpensesViewModel) {
-    viewModel.sendMoneyToOther(expense, sum)
+    viewModel.sendMoneyToOther(expense.id,expense.name, sum)
 }
 
 private fun moneyIncrease(moneyIncrease: Int, isRestart: Boolean, viewModel: ExpensesViewModel) {
