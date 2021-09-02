@@ -79,7 +79,7 @@ private fun TransactionItem(
                 .padding(start = UiConsts.padding, end = UiConsts.padding),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(transaction.name)
+            Text(transaction.expenseName)
             Text(transaction.change.toString())
         }
         Row(
