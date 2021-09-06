@@ -1,4 +1,4 @@
-package com.glbgod.knowyourbudget.ui
+package com.glbgod.knowyourbudget.ui.pages.addTransaction
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.navigation.NavController
 import com.glbgod.knowyourbudget.expenses.data.Expense
 import com.glbgod.knowyourbudget.expenses.data.ExpenseRegularity
+import com.glbgod.knowyourbudget.ui.budgetlist.ExpenseItem
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel
@@ -23,32 +24,27 @@ fun ChangePage(outterNavController: NavController, viewModel: ExpensesViewModel)
     Column(Modifier.padding(UiConsts.padding)) {
         val expense by viewModel.currentExpense.observeAsState(null)
         val allExpenses by viewModel.allExpenses.observeAsState(listOf())
-        com.glbgod.knowyourbudget.utils.Debug.log("expense in change:${expense?.name ?: null}")
         var expanded by remember { mutableStateOf(false) }
         var checked by remember { mutableStateOf(false) }
-
-
         var selectedExpense by remember { mutableStateOf(expense) }
         if (selectedExpense == null) {
             selectedExpense = expense
         }
         var isIncrease by remember { mutableStateOf(false) }
-        var sum by remember {
-            mutableStateOf(0)
-        }
-        var isRestartBudget by remember {
-            mutableStateOf(false)
-        }
-        var errorText by remember {
-            mutableStateOf("")
-        }
+        var sum by remember { mutableStateOf(0) }
+        var isRestartBudget by remember { mutableStateOf(false) }
+        var errorText by remember { mutableStateOf("") }
 
+        // Header
         Text(
             "New Tansaction!",
             fontSize = TextUnit(20F, TextUnitType.Sp),
             modifier = Modifier.padding(top = UiConsts.padding, bottom = UiConsts.padding)
         )
         Divider(Modifier.padding(UiConsts.padding * 2))
+        //
+
+        // Error text
         if (errorText != "") {
             Text(
                 text = errorText,
@@ -56,7 +52,9 @@ fun ChangePage(outterNavController: NavController, viewModel: ExpensesViewModel)
                 color = androidx.compose.ui.graphics.Color.Red
             )
         }
+        //
 
+        // Expense selector
         if (!isIncrease) {
             Button(
                 onClick = { expanded = !expanded },
@@ -75,7 +73,6 @@ fun ChangePage(outterNavController: NavController, viewModel: ExpensesViewModel)
                     expanded = !expanded
                     errorText = ""
                 }) {
-//                    Text(text = "${expense.name} [${expense.category}]")
                     val bgColor = when (expense.regularity) {
                         ExpenseRegularity.DAILY.regularity -> MyColors.DailyColor
                         ExpenseRegularity.WEEKLY.regularity -> MyColors.WeeklyColor
@@ -90,6 +87,9 @@ fun ChangePage(outterNavController: NavController, viewModel: ExpensesViewModel)
                 }
             }
         }
+        //
+
+        // Currently selected expense
         if (selectedExpense != null && !isIncrease) {
             val bgColor = when (selectedExpense!!.regularity) {
                 ExpenseRegularity.DAILY.regularity -> MyColors.DailyColor
@@ -103,6 +103,9 @@ fun ChangePage(outterNavController: NavController, viewModel: ExpensesViewModel)
                 bgColor = bgColor,
                 onLongPress = {})
         }
+        //
+
+
         Row(
             Modifier
                 .fillMaxWidth()
@@ -232,7 +235,7 @@ private fun onTransactionClick(
 }
 
 private fun sendMoneyToOther(sum: Int, expense: Expense, viewModel: ExpensesViewModel) {
-    viewModel.sendMoneyToOther(expense.id,expense.name, sum)
+    viewModel.sendMoneyToOther(expense.id, expense.name, sum)
 }
 
 private fun moneyIncrease(moneyIncrease: Int, isRestart: Boolean, viewModel: ExpensesViewModel) {

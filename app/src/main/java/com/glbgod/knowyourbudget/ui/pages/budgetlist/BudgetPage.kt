@@ -1,4 +1,4 @@
-package com.glbgod.knowyourbudget.ui
+package com.glbgod.knowyourbudget.ui.budgetlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
