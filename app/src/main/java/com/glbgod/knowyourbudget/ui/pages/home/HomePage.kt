@@ -18,7 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.glbgod.knowyourbudget.expenses.data.Expense
 import com.glbgod.knowyourbudget.ui.Screen
 import com.glbgod.knowyourbudget.ui.pages.transactions.TransactionsPage
-import com.glbgod.knowyourbudget.ui.budgetlist.BudgetPage
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.BudgetPage
 import com.glbgod.knowyourbudget.utils.Debug
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel
 

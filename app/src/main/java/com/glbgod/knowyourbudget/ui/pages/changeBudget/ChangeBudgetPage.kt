@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.navigation.NavController
 import com.glbgod.knowyourbudget.expenses.data.Expense
 import com.glbgod.knowyourbudget.expenses.data.ExpenseRegularity
-import com.glbgod.knowyourbudget.ui.budgetlist.ExpenseItem
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.ExpenseItem
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel
