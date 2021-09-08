@@ -1,6 +1,7 @@
 package com.glbgod.knowyourbudget.viewmodel
 
 data class CurrentBalance(
-    val stableIncome:Int,
-    val currentMoney:Int
+    val monthStartBalance:Int,
+    val currentMoney:Int,
+    val stableIncome:Int
 )

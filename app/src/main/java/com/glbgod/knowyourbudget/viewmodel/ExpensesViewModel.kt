@@ -22,7 +22,6 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
     )
     private var transactionsRepository: TransactionsRepository = TransactionsRepository(
         ExpenseRoomDatabase.getDatabase(application, viewModelScope).transactionsDao()
-
     )
 
     // todo: store expenses categorised not to do that on ui thread every update
@@ -70,8 +69,9 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                     }
                     _currentBalance.postValue(
                         CurrentBalance(
-                            stableIncome = PreferencesProvider.getStableIncome(),
-                            currentMoney = PreferencesProvider.getStableIncome() + sumSpent
+                            monthStartBalance = PreferencesProvider.getMonthStartBalance(),
+                            currentMoney = PreferencesProvider.getMonthStartBalance() + sumSpent,
+                            stableIncome = PreferencesProvider.getStableIncome()
                         )
                     )
                     _allTransactions.postValue(transactions)
@@ -88,8 +88,8 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    private suspend fun doRecalculation(lastUpdateTime: Long) {
-        val now = System.currentTimeMillis()
+    private suspend fun doRecalculation(lastUpdateTime: Long,likeTodayIs:Long? = null) {
+        val now = likeTodayIs?:System.currentTimeMillis()
         val daysPassed = lastUpdateTime.daysPassed(now)
 
         val cycleStart = PreferencesProvider.getCycleStartTime()
@@ -135,10 +135,12 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         }
         val stableIncome = SensetiveData.getStableIncome()
         PreferencesProvider.saveStableIncome(stableIncome)
+//        PreferencesProvider.saveMonthStartBalance(stableIncome)
         _currentBalance.postValue(
             CurrentBalance(
-                stableIncome = PreferencesProvider.getStableIncome(),
-                currentMoney = 0
+                monthStartBalance = PreferencesProvider.getMonthStartBalance(),
+                currentMoney = 0,
+                stableIncome = PreferencesProvider.getStableIncome()
             )
         )
         PreferencesProvider.saveCycleStartTime(now)
@@ -149,14 +151,29 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch(Dispatchers.IO) {
             if (isBudgetRestart) {
                 if (time==0L) throw Exception("when resetting budget time should be provided")
-                expensesRepository.updateAllBalances()
                 //todo [release v0.2] add transactions for all updates?
+                val lastUpdateTime = PreferencesProvider.getLastUpdateTime()
+                val likeTodayIs = Utils.getCycleRestartTimeLong()
                 PreferencesProvider.saveCycleStartTime(time)
                 PreferencesProvider.saveLastUpdateTime(time)
+
+                var stableIncome = PreferencesProvider.getStableIncome()
+                val balanceInStartOfTheMonth = PreferencesProvider.getMonthStartBalance()
+                PreferencesProvider.saveMonthStartBalance(balanceInStartOfTheMonth+stableIncome)
+
+                _currentBalance.postValue(
+                    CurrentBalance(
+                        monthStartBalance = PreferencesProvider.getMonthStartBalance(),
+                        currentMoney = PreferencesProvider.getMonthStartBalance(),
+                        stableIncome = PreferencesProvider.getStableIncome()
+                    )
+                )
                 if (!time.isToday()) {
                     doRecalculation(time)
                 }
 
+                doRecalculation(lastUpdateTime,likeTodayIs = likeTodayIs)
+                expensesRepository.updateAllMonthlyBalances()
             } else {
                 updateExpenseBalance(
                     expenseId = 1,

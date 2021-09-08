@@ -77,7 +77,8 @@ fun Long.toDateTime(): String {
 }
 
 // todo rewrite
-fun Int.toBeautifulString():String{
+fun Int?.toBeautifulString():String{
+    if (this==null) return ""
     return if (this>9999){
         val remainder = (this%1000).toString()
         val remainderZerosString = when (3-remainder.length){
@@ -97,16 +98,32 @@ fun Long.plusDays(day: Int): Long {
     return this + (day * 24 * 60 * 60 * 1000)
 }
 
+fun Int.dailyToMonthly():Int{
+    return this*35
+}
+
+fun Int.weeklyToMonthly():Int{
+    return this*5
+}
+
+fun Long.dailyToMonthly():Long{
+    return this*35
+}
+
+fun Long.weeklyToMonthly():Long{
+    return this*5
+}
+
 fun List<Expense>.calculateLeftOver(stableIncome: Int): Int {
     var totalMoneyUsed = 0
     for (item in this) {
         if (item.id == 1) continue
         totalMoneyUsed += when (item.regularity) {
             ExpenseRegularity.DAILY.regularity -> {
-                item.budget * 35
+                item.budget.dailyToMonthly()
             }
             ExpenseRegularity.WEEKLY.regularity -> {
-                item.budget * 5
+                item.budget.weeklyToMonthly()
             }
             ExpenseRegularity.MONTHLY.regularity -> {
                 item.budget
