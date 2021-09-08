@@ -145,14 +145,18 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         PreferencesProvider.saveLastUpdateTime(now)
     }
 
-    fun moneyIncrease(isBudgetRestart: Boolean, change: Long) {
+    fun moneyIncrease(isBudgetRestart: Boolean, change: Long,time:Long=0L) {
         viewModelScope.launch(Dispatchers.IO) {
             if (isBudgetRestart) {
+                if (time==0L) throw Exception("when resetting budget time should be provided")
                 expensesRepository.updateAllBalances()
                 //todo [release v0.2] add transactions for all updates?
-                val now = System.currentTimeMillis()
-                PreferencesProvider.saveCycleStartTime(now)
-                PreferencesProvider.saveLastUpdateTime(now)
+                PreferencesProvider.saveCycleStartTime(time)
+                PreferencesProvider.saveLastUpdateTime(time)
+                if (!time.isToday()) {
+                    doRecalculation(time)
+                }
+
             } else {
                 updateExpenseBalance(
                     expenseId = 1,
