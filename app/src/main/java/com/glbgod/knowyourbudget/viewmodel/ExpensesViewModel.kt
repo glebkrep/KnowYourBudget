@@ -143,8 +143,8 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                 stableIncome = PreferencesProvider.getStableIncome()
             )
         )
-        PreferencesProvider.saveCycleStartTime(now)
-        PreferencesProvider.saveLastUpdateTime(now)
+//        PreferencesProvider.saveCycleStartTime(now)
+//        PreferencesProvider.saveLastUpdateTime(now)
     }
 
     fun moneyIncrease(isBudgetRestart: Boolean, change: Long,time:Long=0L) {
@@ -172,6 +172,9 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                     doRecalculation(time)
                 }
 
+                //todo!
+                // -if from first app start it still fills all the balances to max
+                // -if from first app start balance is stil added up daily
                 doRecalculation(lastUpdateTime,likeTodayIs = likeTodayIs)
                 expensesRepository.updateAllMonthlyBalances()
             } else {
