@@ -80,9 +80,9 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
 
         viewModelScope.launch(Dispatchers.IO) {
             val lastUpdateTime = PreferencesProvider.getLastUpdateTime()
-            if (lastUpdateTime == 0L) {
+            if (!PreferencesProvider.getFirstStarted()) {
                 firstAppStart()
-            } else if (!lastUpdateTime.isToday()) {
+            } else if (lastUpdateTime != 0L && !lastUpdateTime.isToday()) {
                 doRecalculation(lastUpdateTime)
             }
         }
@@ -101,7 +101,7 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         if (weeksPassed>0){
             expensesRepository.updateRegularBalances(regularity = ExpenseRegularity.WEEKLY.regularity,weeksPassed)
         }
-        PreferencesProvider.saveLastUpdateTime(now)
+        PreferencesProvider.saveLastUpdateTime(System.currentTimeMillis())
     }
 
     private suspend fun updateExpenseBalance(
@@ -145,12 +145,14 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
         )
 //        PreferencesProvider.saveCycleStartTime(now)
 //        PreferencesProvider.saveLastUpdateTime(now)
+        PreferencesProvider.saveFirstStarted(true)
     }
 
     fun moneyIncrease(isBudgetRestart: Boolean, change: Long,time:Long=0L) {
         viewModelScope.launch(Dispatchers.IO) {
             if (isBudgetRestart) {
                 if (time==0L) throw Exception("when resetting budget time should be provided")
+                if (time>System.currentTimeMillis()) throw Exception("you can't update balance in future")
                 //todo [release v0.2] add transactions for all updates?
                 val lastUpdateTime = PreferencesProvider.getLastUpdateTime()
                 val likeTodayIs = Utils.getCycleRestartTimeLong()
@@ -158,8 +160,7 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                 PreferencesProvider.saveLastUpdateTime(time)
 
                 var stableIncome = PreferencesProvider.getStableIncome()
-                val balanceInStartOfTheMonth = PreferencesProvider.getMonthStartBalance()
-                PreferencesProvider.saveMonthStartBalance(balanceInStartOfTheMonth+stableIncome)
+                PreferencesProvider.saveMonthStartBalance((_currentBalance.value?.currentMoney?:0)+stableIncome)
 
                 _currentBalance.postValue(
                     CurrentBalance(
@@ -168,15 +169,23 @@ class ExpensesViewModel(application: Application) : AndroidViewModel(application
                         stableIncome = PreferencesProvider.getStableIncome()
                     )
                 )
-                if (!time.isToday()) {
-                    doRecalculation(time)
+                if (lastUpdateTime==0L){
+                    if (!time.isToday() && time<System.currentTimeMillis()){
+                        Debug.log("budget update! from money increase restart")
+                        expensesRepository.updateRegularBalances(ExpenseRegularity.DAILY.regularity,time.daysPassed(System.currentTimeMillis()).toInt()+1)
+                        expensesRepository.updateRegularBalances(ExpenseRegularity.WEEKLY.regularity,time.weeksPassed(time,System.currentTimeMillis())+1)
+                        expensesRepository.updateAllMonthlyBalances()
+                    }
+                    else{
+                        expensesRepository.updateAllBalances()
+                    }
                 }
-
-                //todo!
-                // -if from first app start it still fills all the balances to max
-                // -if from first app start balance is stil added up daily
-                doRecalculation(lastUpdateTime,likeTodayIs = likeTodayIs)
-                expensesRepository.updateAllMonthlyBalances()
+                else {
+                    doRecalculation(lastUpdateTime,likeTodayIs = likeTodayIs)
+                    expensesRepository.updateRegularBalances(ExpenseRegularity.DAILY.regularity,1)
+                    expensesRepository.updateRegularBalances(ExpenseRegularity.WEEKLY.regularity,1)
+                    expensesRepository.updateAllMonthlyBalances()
+                }
             } else {
                 updateExpenseBalance(
                     expenseId = 1,

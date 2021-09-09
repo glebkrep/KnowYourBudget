@@ -124,7 +124,7 @@ fun ChangePage(outterNavController: NavController, viewModel: ExpensesViewModel)
             )
             Switch(checked = isIncrease, onCheckedChange = { isIncrease = !isIncrease })
         }
-        if (!isRestartBudget && isIncrease){
+        if (!isRestartBudget){
             Row(
                 Modifier
                     .fillMaxWidth()

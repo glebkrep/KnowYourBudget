@@ -54,11 +54,22 @@ object PreferencesProvider {
         )
     }
 
+    fun saveFirstStarted(boolean: Boolean){
+        preferences.edit().putBoolean(FIRST_STARTED_ALREADY,boolean).apply()
+    }
+
+    fun getFirstStarted():Boolean{
+        return preferences.getBoolean(
+            FIRST_STARTED_ALREADY,
+            false
+        )
+    }
+
     private const val LAST_TIME_UPDATED = "last_time_updated"
     private const val CYCLE_START_TIME = "cycle_start_time"
     private const val STABLE_INCOME = "stable_income"
     private const val MONTH_START_BALACNE = "month_start_balance"
-    private const val WAS_LAST_FROM_FIRST_START = "WAS_LAST_FROM_FIRST_START"
+    private const val FIRST_STARTED_ALREADY = "WAS_LAST_FROM_FIRST_START"
 
 
 }

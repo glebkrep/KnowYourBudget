@@ -3,6 +3,7 @@ package com.glbgod.knowyourbudget.expenses
 import com.glbgod.knowyourbudget.expenses.data.Expense
 import com.glbgod.knowyourbudget.expenses.data.ExpenseRegularity
 import com.glbgod.knowyourbudget.expenses.data.ExpensesDao
+import com.glbgod.knowyourbudget.utils.Debug
 
 class ExpenseRepository(private val expensesDao: ExpensesDao) {
 
@@ -25,7 +26,12 @@ class ExpenseRepository(private val expensesDao: ExpensesDao) {
     }
 
     suspend fun updateRegularBalances(regularity:Int,budgetsAdded:Int) {
+        Debug.log("update all regularity ${regularity} with ${budgetsAdded}")
         expensesDao.updateRegularBalances(budgetsAdded = budgetsAdded,regularity = regularity)
+    }
+
+    suspend fun updateAllBalances() {
+        expensesDao.updateAllBalances()
     }
 
 }
