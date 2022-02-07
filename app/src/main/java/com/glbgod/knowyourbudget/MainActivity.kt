@@ -9,9 +9,9 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.glbgod.knowyourbudget.ui.ChangeBudgetPage
-import com.glbgod.knowyourbudget.ui.ChangePage
-import com.glbgod.knowyourbudget.ui.HomePage
+import com.glbgod.knowyourbudget.ui.pages.changeBudget.ChangeBudgetPage
+import com.glbgod.knowyourbudget.ui.pages.addTransaction.ChangePage
+import com.glbgod.knowyourbudget.ui.pages.home.HomePage
 import com.glbgod.knowyourbudget.ui.Screen
 import com.glbgod.knowyourbudget.ui.theme.KnowYourBudgetTheme
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel

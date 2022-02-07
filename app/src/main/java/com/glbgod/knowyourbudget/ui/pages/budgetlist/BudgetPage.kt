@@ -1,4 +1,4 @@
-package com.glbgod.knowyourbudget.ui
+package com.glbgod.knowyourbudget.ui.pages.budgetlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +23,7 @@ import com.glbgod.knowyourbudget.expenses.data.ExpenseRegularity
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.RegularityStyle
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
+import com.glbgod.knowyourbudget.utils.Debug
 import com.glbgod.knowyourbudget.utils.Utils
 import com.glbgod.knowyourbudget.utils.toBeautifulString
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel
@@ -37,13 +38,22 @@ fun BudgetPage(
     Column(Modifier.verticalScroll(scrollState)) {
         val allExpenses by viewModel.allExpenses.observeAsState(listOf())
         val currentBalance by viewModel.currentBalance.observeAsState()
+        Debug.log("budget page!")
+        Debug.log("expenses: ${allExpenses}")
+        Debug.log("balance: ${currentBalance}")
 
         Column(Modifier.padding(UiConsts.padding).fillMaxWidth()) {
             Text(
-                text = "${currentBalance?.currentMoney?.toBeautifulString()} out of ${currentBalance?.stableIncome?.toBeautifulString()}",
+                text = "${currentBalance?.currentMoney?.toBeautifulString()} out of ${currentBalance?.monthStartBalance?.toBeautifulString()} (${currentBalance?.stableIncome?.toBeautifulString()})",
                 modifier = Modifier.padding(UiConsts.padding)
             )
-            LinearProgressIndicator(progress = (currentBalance?.currentMoney?.toFloat()?:1f)/(currentBalance?.stableIncome?.toFloat()?:1f), Modifier.fillMaxWidth())
+            val start = currentBalance?.currentMoney
+            val end = currentBalance?.monthStartBalance
+            val progress = if (start==null || end==null || start > end || end == 0) 1f
+            else{
+                start.toFloat()/end.toFloat()
+            }
+            LinearProgressIndicator(progress = progress, Modifier.fillMaxWidth())
         }
 
         // todo: move this calculation to viewModel and get categorised data from there

@@ -1,4 +1,4 @@
-package com.glbgod.knowyourbudget.ui
+package com.glbgod.knowyourbudget.ui.pages.home
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
@@ -16,6 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.glbgod.knowyourbudget.expenses.data.Expense
+import com.glbgod.knowyourbudget.ui.Screen
+import com.glbgod.knowyourbudget.ui.pages.transactions.TransactionsPage
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.BudgetPage
 import com.glbgod.knowyourbudget.utils.Debug
 import com.glbgod.knowyourbudget.viewmodel.ExpensesViewModel
 

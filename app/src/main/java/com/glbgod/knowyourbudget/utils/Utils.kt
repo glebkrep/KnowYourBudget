@@ -29,8 +29,13 @@ object Utils {
 
     fun getCycleRestartTime(): String {
         val cycleStart = PreferencesProvider.getCycleStartTime()
-        val cycleRestart = cycleStart + (33L * 24L * 60L * 60L * 1000L)
+        val cycleRestart = cycleStart + (24L * 60L * 60L * 1000L.dailyToMonthly())
         val now = System.currentTimeMillis()
         return now.daysPassed(cycleRestart).toString()
+    }
+
+    fun getCycleRestartTimeLong(): Long {
+        val cycleStart = PreferencesProvider.getCycleStartTime()
+        return cycleStart + (24L * 60L * 60L * 1000L.dailyToMonthly())
     }
 }
