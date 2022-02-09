@@ -1,11 +1,7 @@
 package com.glbgod.knowyourbudget.ui.custom
 
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Context
-import androidx.activity.ComponentActivity
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,22 +11,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.glbgod.knowyourbudget.utils.toDateTime
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.glbgod.knowyourbudget.core.utils.toDateTime
 import java.util.*
 
 @Composable
 fun DatePickerView(
-    currentDate:Long,
-    updatedDate : ( date : Long? ) -> Unit,
+    currentDate: Long,
+    updatedDate: (date: Long?) -> Unit,
 ) {
     val activity = LocalContext.current
     Box(
@@ -38,8 +30,8 @@ fun DatePickerView(
             .padding(10.dp)
             .border(0.5.dp, MaterialTheme.colors.onSurface.copy(alpha = 0.5f))
             .wrapContentHeight()
-            .clickable{
-                showDatePicker(activity,currentDate ,updatedDate)
+            .clickable {
+                showDatePicker(activity, currentDate, updatedDate)
             }
     ) {
 
@@ -52,7 +44,7 @@ fun DatePickerView(
             val (lable, iconView) = createRefs()
 
             Text(
-                text= currentDate.toDateTime(),
+                text = currentDate.toDateTime(),
                 color = MaterialTheme.colors.onSurface,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,19 +74,24 @@ fun DatePickerView(
 
     }
 }
+
 private fun showDatePicker(
-    context : Context,
+    context: Context,
     currentDate: Long,
-    updatedDate: (Long?) -> Unit)
-{
+    updatedDate: (Long?) -> Unit
+) {
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = currentDate
     val picker = DatePickerDialog(context)
-    picker.updateDate(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH))
+    picker.updateDate(
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
     picker.show()
     picker.setOnDateSetListener { _, year, month, day ->
         val calendar = Calendar.getInstance()
-        calendar.set(year,month,day)
+        calendar.set(year, month, day)
         updatedDate.invoke(calendar.timeInMillis)
     }
 }
