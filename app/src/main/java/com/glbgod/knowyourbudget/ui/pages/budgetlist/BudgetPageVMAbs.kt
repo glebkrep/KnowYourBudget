@@ -78,7 +78,6 @@ abstract class BudgetPageVMAbs(application: Application) :
         return expensesData
     }
 
-    //TODO: COUNT OTHER ITEM SEPARATLY
     private fun expenseWithTransModelToExpenseItem(
         moneyOccupiedByAllExpenses: Int,
         expenseWithTransactionsModel: ExpenseWithTransactionsModel
@@ -91,7 +90,7 @@ abstract class BudgetPageVMAbs(application: Application) :
         val unlockedMoney = getMoneyUnlockedATM(expenseWithTransactionsModel.expense)
         val currentBalanceForPeriod =
             if (expenseWithTransactionsModel.expense.expenseId == 1) {
-                (currentBalanceInTransactions - PreferencesProvider.getMonthStartBalance()) + (PreferencesProvider.getMonthStartBalance()-moneyOccupiedByAllExpenses)
+                (currentBalanceInTransactions - PreferencesProvider.getMonthStartBalance()) + (PreferencesProvider.getMonthStartBalance() - moneyOccupiedByAllExpenses)
             } else {
                 unlockedMoney + currentBalanceInTransactions
             }
@@ -127,7 +126,7 @@ abstract class BudgetPageVMAbs(application: Application) :
             if (expenseWithTransactionsModel.expense.expenseId != 1) {
                 expenseWithTransactionsModel.expense.budgetPerRegularity
             } else {
-                PreferencesProvider.getMonthStartBalance()-moneyOccupiedByAllExpenses
+                PreferencesProvider.getMonthStartBalance() - moneyOccupiedByAllExpenses
             },
             totalBalanceLeft = totalBalanceLeft,
             iconResId = expenseWithTransactionsModel.expense.iconResId,
@@ -149,6 +148,5 @@ abstract class BudgetPageVMAbs(application: Application) :
         val moneyUnlocked = balancesUnlocked * expenseModel.budgetPerRegularity
         return moneyUnlocked
     }
-
 
 }

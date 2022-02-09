@@ -49,7 +49,7 @@ fun ExpenseItem(
     ) {
         Row(Modifier.padding(UiConsts.padding), verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painter = painterResource(id = R.drawable.ic_rubble),
+                painter = painterResource(id = expenseItem.iconResId),
                 contentDescription = "",
                 modifier = Modifier
                     .padding(start = 4.dp, end = 8.dp)
