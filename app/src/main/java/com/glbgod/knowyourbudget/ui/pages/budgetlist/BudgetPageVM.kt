@@ -12,6 +12,7 @@ import com.glbgod.knowyourbudget.feature.db.data.ExpenseModel
 import com.glbgod.knowyourbudget.feature.db.data.TransactionCategory
 import com.glbgod.knowyourbudget.feature.db.data.TransactionModel
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
@@ -86,7 +87,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
     override fun handleEvent(event: BudgetPageEvent) {
         when (event) {
             is BudgetPageEvent.EditTotalBalanceClicked -> {
-                restartBudget(100000)
+                postState(
+                    BudgetPageState.EditTotalBalanceDialog(
+                        getCurrentStateNotNull().totalBudgetData,
+                        getCurrentStateNotNull().expensesData
+                    )
+                )
             }
             is BudgetPageEvent.AddTransactionToExpenseClicked -> {
                 Debug.log("adding transaction")
@@ -128,7 +134,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 TODO()
             }
             BudgetPageEvent.DialogDismissed -> {
-                TODO()
+                postState(
+                    BudgetPageState.NoDialogs(
+                        getCurrentStateNotNull().totalBudgetData,
+                        getCurrentStateNotNull().expensesData
+                    )
+                )
             }
             is BudgetPageEvent.EditExpenseClicked -> {
                 TODO()
@@ -137,7 +148,22 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 TODO()
             }
             is BudgetPageEvent.EditTotalBalanceFinished -> {
-                TODO()
+                if (event.isRestart){
+                    restartBudget(event.balanceAdded)
+                }
+                else {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        budgetRepository.insertTransaction(
+                            TransactionModel(
+                                parentExpenseId = 1,
+                                expenseName = "Дополнительный заработок",
+                                change = event.balanceAdded,
+                                time = System.currentTimeMillis(),
+                                transactionCategory = 1
+                            )
+                        )
+                    }
+                }
             }
             is BudgetPageEvent.OnExpenseOpenCloseClicked -> {
                 TODO()

@@ -28,4 +28,7 @@ object MyColors {
 
     val ProgressMedium = Color(0xFFF2B61D)
     val ProgressBad = Color(0xFFA712120)
+
+    val ButtonRed = Color(0xFFA14A4A)
+    val ButtonGreen = Color(0xFF3BBD60)
 }
