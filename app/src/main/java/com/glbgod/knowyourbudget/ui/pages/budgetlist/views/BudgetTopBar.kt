@@ -45,7 +45,7 @@ fun BudgetTopBar(totalBudgetData: TotalBudgetData,onEvent:(BudgetPageEvent)->(Un
                 modifier = Modifier
             ) {
                 Text(
-                    text = "${totalBudgetData.balance.toBeautifulString()} / ${totalBudgetData.outOf.toBeautifulString()})",
+                    text = "${totalBudgetData.balance.toBeautifulString()} / ${totalBudgetData.outOf.toBeautifulString()}",
                     modifier = Modifier
                         .padding(UiConsts.padding)
                         .weight(1f), fontSize = 18.sp
