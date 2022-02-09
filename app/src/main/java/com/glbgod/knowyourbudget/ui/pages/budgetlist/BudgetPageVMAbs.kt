@@ -31,7 +31,14 @@ abstract class BudgetPageVMAbs(application: Application) :
     ): ExpensesData {
         Debug.log("getExpensesData (expenseModels: ${expenseModels.map { it.expense.name }})")
         val expenseItems = expenseModels.map { expenseWithTransactions ->
-            expenseWithTransModelToExpenseItem(expenseWithTransactions)
+            expenseWithTransModelToExpenseItem(
+                expenseModels.map {
+                    it.expense.budgetPerRegularity * expenseRegularityByRegularityInt(
+                        it.expense.regularity
+                    ).refillsInMonth
+                }.sum(),
+                expenseWithTransactionsModel = expenseWithTransactions
+            )
         }
         Debug.log("getExpensesData (expenseItems: ${expenseItems.map { it.name }})")
 
@@ -58,7 +65,6 @@ abstract class BudgetPageVMAbs(application: Application) :
                     regularity = ExpenseRegularity.WEEKLY
                 )
             },
-            //TODO: COUNT OTHER ITEM SEPARATLY
             monthly = groupedExpenseItems.filter {
                 it.key.first == ExpenseRegularity.MONTHLY
             }.map {
@@ -72,7 +78,9 @@ abstract class BudgetPageVMAbs(application: Application) :
         return expensesData
     }
 
+    //TODO: COUNT OTHER ITEM SEPARATLY
     private fun expenseWithTransModelToExpenseItem(
+        moneyOccupiedByAllExpenses: Int,
         expenseWithTransactionsModel: ExpenseWithTransactionsModel
     ): ExpenseItem {
         val regularity =
@@ -81,10 +89,19 @@ abstract class BudgetPageVMAbs(application: Application) :
         val currentBalanceInTransactions =
             expenseWithTransactionsModel.transactions.map { it.change }.sum()
         val unlockedMoney = getMoneyUnlockedATM(expenseWithTransactionsModel.expense)
-        val currentBalanceForPeriod = unlockedMoney + currentBalanceInTransactions
+        val currentBalanceForPeriod =
+            if (expenseWithTransactionsModel.expense.expenseId == 1) {
+                (currentBalanceInTransactions - PreferencesProvider.getMonthStartBalance()) + (PreferencesProvider.getMonthStartBalance()-moneyOccupiedByAllExpenses)
+            } else {
+                unlockedMoney + currentBalanceInTransactions
+            }
 
         val totalBalanceLeft =
-            (regularity.refillsInMonth * expenseWithTransactionsModel.expense.budgetPerRegularity) + currentBalanceInTransactions
+            if (expenseWithTransactionsModel.expense.expenseId == 1) {
+                currentBalanceForPeriod.toInt()
+            } else {
+                (regularity.refillsInMonth * expenseWithTransactionsModel.expense.budgetPerRegularity) + currentBalanceInTransactions
+            }
 
         var progressBarFloat =
             currentBalanceForPeriod.toFloat() / expenseWithTransactionsModel.expense.budgetPerRegularity.toFloat()
@@ -106,7 +123,12 @@ abstract class BudgetPageVMAbs(application: Application) :
             regularity = regularity,
             category = expenseWithTransactionsModel.expense.category,
             currentBalanceForPeriod = currentBalanceForPeriod.toInt(),
-            totalBalanceForPeriod = expenseWithTransactionsModel.expense.budgetPerRegularity,
+            totalBalanceForPeriod =
+            if (expenseWithTransactionsModel.expense.expenseId != 1) {
+                expenseWithTransactionsModel.expense.budgetPerRegularity
+            } else {
+                PreferencesProvider.getMonthStartBalance()-moneyOccupiedByAllExpenses
+            },
             totalBalanceLeft = totalBalanceLeft,
             iconResId = expenseWithTransactionsModel.expense.iconResId,
             progressFloat = progressBarFloat,

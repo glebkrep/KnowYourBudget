@@ -61,8 +61,17 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
             expensesRepository.insertTransaction(
                 TransactionModel(
                     parentExpenseId = 1,
-                    expenseName = "huita",
+                    expenseName = "Заработок",
                     change = restartMoney,
+                    time = System.currentTimeMillis(),
+                    transactionCategory = 1
+                )
+            )
+            expensesRepository.insertTransaction(
+                TransactionModel(
+                    parentExpenseId = 1,
+                    expenseName = "Переход с прошлого месяца",
+                    change = monthStartBalance-restartMoney,
                     time = System.currentTimeMillis(),
                     transactionCategory = 1
                 )
