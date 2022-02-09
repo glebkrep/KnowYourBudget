@@ -10,6 +10,6 @@ data class ExpenseWithTransactionsModel(
         parentColumn = "id",
         entityColumn = "parent_expense_id"
     )
-    val transactions: List<TransactionModel>
+    var transactions: List<TransactionModel>
 
 )

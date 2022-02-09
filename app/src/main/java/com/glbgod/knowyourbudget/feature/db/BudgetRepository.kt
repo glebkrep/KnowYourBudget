@@ -10,8 +10,7 @@ class BudgetRepository(
 
     fun getAllExpensesFlow() = expensesDao.getAllItemsFlow()
 
-    suspend fun getAllExpenses() = expensesDao.getAllItems()
-
+    suspend fun getAllTransactionsFromDate(dateTime:Long) = transactionsDao.getAllItemsFromDate(dateTime)
 
     suspend fun insertTransaction(transactionModel: TransactionModel) {
         transactionsDao.insert(transactionModel)

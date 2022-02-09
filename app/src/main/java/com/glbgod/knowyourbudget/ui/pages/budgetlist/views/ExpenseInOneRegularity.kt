@@ -95,18 +95,10 @@ fun ExpenseInOneRegularity(
                         onReceivedEvent.invoke(BudgetPageEvent.EditExpenseClicked(it))
                     })
             }
-            if (expenseCategoriesData.first().regularity == ExpenseRegularity.WEEKLY) {
-                Text(
-                    text = "Next refill in ${Utils.getDaysToWeekStart()} days",
-                    Modifier.padding(UiConsts.padding)
-                )
-            }
-            if (expenseCategoriesData.first().regularity == ExpenseRegularity.MONTHLY) {
-                Text(
-                    text = "Next paycheck expected in ${Utils.getCycleRestartTime()} days",
-                    Modifier.padding(UiConsts.padding)
-                )
-            }
+            Text(
+                text = "Next refill in ${expenseCategoriesData.first().items.first().nextRefillInDays} days",
+                Modifier.padding(UiConsts.padding)
+            )
         }
     }
 }

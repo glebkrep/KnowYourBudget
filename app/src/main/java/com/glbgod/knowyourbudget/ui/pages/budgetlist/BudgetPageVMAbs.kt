@@ -20,13 +20,30 @@ abstract class BudgetPageVMAbs(application: Application) :
         application,
         BaseAction.None
     ) {
-    protected fun getTotalBudgetData(transactionModels: List<TransactionModel>): TotalBudgetData {
+    protected fun recalculateData(
+        expenseModelsRaw: List<ExpenseWithTransactionsModel>,
+    ) {
+        expenseModelsRaw.forEach{ expenseWithTransactionsModelRaw ->
+            expenseWithTransactionsModelRaw.transactions = expenseWithTransactionsModelRaw.transactions.filter {it.time>=PreferencesProvider.getCycleStartTime()}
+        }
+        val expenseModels = expenseModelsRaw
+        //todo transactions should be filtered by this time
+        val transactions = expenseModels.map { it.transactions }.flatten()
+        val totalBudgetData = getTotalBudgetData(transactions)
+        val expensesData = getExpensesData(expenseModels)
+
+        if ((expensesData.daily + expensesData.monthly + expensesData.weekly).isNotEmpty()) {
+            postState(BudgetPageState.NoDialogs(totalBudgetData, expensesData))
+        }
+    }
+
+    private fun getTotalBudgetData(transactionModels: List<TransactionModel>): TotalBudgetData {
         val currentBalance = transactionModels.map { it.change.toLong() }.sum()
         val restartMoney = PreferencesProvider.getRestartMoney()
         return TotalBudgetData(currentBalance.toInt(), restartMoney)
     }
 
-    protected fun getExpensesData(
+    private fun getExpensesData(
         expenseModels: List<ExpenseWithTransactionsModel>,
     ): ExpensesData {
         Debug.log("getExpensesData (expenseModels: ${expenseModels.map { it.expense.name }})")
@@ -114,7 +131,7 @@ abstract class BudgetPageVMAbs(application: Application) :
         val daysToNextRefill = when (regularity) {
             ExpenseRegularity.DAILY -> 1
             ExpenseRegularity.WEEKLY -> Utils.getDaysToWeekStart()
-            ExpenseRegularity.MONTHLY -> Utils.getDaysToCycleRestart()
+            ExpenseRegularity.MONTHLY -> Utils.getDaysToCycleRestartTime()
         }
         val newItem = ExpenseItem(
             id = expenseWithTransactionsModel.expense.expenseId,

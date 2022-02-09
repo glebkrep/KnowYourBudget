@@ -20,7 +20,9 @@ fun BudgetPage(
 
     if (state == null) return
     Column(Modifier.verticalScroll(scrollState)) {
-        BudgetTopBar(state!!.totalBudgetData)
+        BudgetTopBar(state!!.totalBudgetData, onEvent = {
+            viewModel.handleEvent(it)
+        })
 
         var isDailyOpen by remember { mutableStateOf(false) }
         var isWeeklyOpen by remember { mutableStateOf(false) }

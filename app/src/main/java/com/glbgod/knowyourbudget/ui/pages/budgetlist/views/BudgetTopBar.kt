@@ -1,6 +1,7 @@
 package com.glbgod.knowyourbudget.ui.pages.budgetlist.views
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,11 +14,12 @@ import com.glbgod.knowyourbudget.R
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.data.TotalBudgetData
 import com.glbgod.knowyourbudget.ui.custom.RoundProgressBar
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
 @Composable
-fun BudgetTopBar(totalBudgetData: TotalBudgetData) {
+fun BudgetTopBar(totalBudgetData: TotalBudgetData,onEvent:(BudgetPageEvent)->(Unit)) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -33,6 +35,9 @@ fun BudgetTopBar(totalBudgetData: TotalBudgetData) {
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .weight(1f)
+                .clickable {
+                    onEvent.invoke(BudgetPageEvent.EditTotalBalanceClicked)
+                }
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -68,7 +73,7 @@ fun BudgetTopBar(totalBudgetData: TotalBudgetData) {
             contentDescription = "",
             modifier = Modifier
                 .padding(start = 4.dp)
-                .size(24.dp)
+                .size(24.dp).clickable { onEvent.invoke(BudgetPageEvent.SettingsClicked) }
         )
     }
 }
