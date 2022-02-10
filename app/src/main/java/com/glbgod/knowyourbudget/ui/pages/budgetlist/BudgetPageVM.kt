@@ -145,6 +145,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
             is BudgetPageEvent.EditExpenseClicked -> {
                 Debug.log("editing expense")
                 val regularity = event.expenseItem.regularity.regularity
+                if (event.expenseItem.id==1) return
                 viewModelScope.launch(Dispatchers.IO) {
                     val currentState = getCurrentStateNotNull()
                     val allExpensesInThisRegularity =
