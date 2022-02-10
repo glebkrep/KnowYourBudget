@@ -2,6 +2,7 @@ package com.glbgod.knowyourbudget.ui.pages.budgetlist.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
@@ -15,35 +16,34 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.glbgod.knowyourbudget.R
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.data.ExpenseItem
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.Shapes
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
-@OptIn(ExperimentalUnitApi::class)
+@OptIn(ExperimentalUnitApi::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun ExpenseItem(
     expenseItem: ExpenseItem,
-    onExpenseClick: (ExpenseItem) -> (Unit),
-    onLongPress: (ExpenseItem) -> (Unit)
+    onEvent: (BudgetPageEvent) -> (Unit)
 ) {
-
-    val modifier = Modifier
-        .padding(top = 8.dp)
-        .pointerInput(Unit) {
-            detectTapGestures(
-                onLongPress = {
-                    onLongPress.invoke(expenseItem)
-                },
-                onTap = {
-                    onExpenseClick.invoke(expenseItem)
-                }
-            )
-        }
     Card(
-        modifier = modifier,
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .combinedClickable(onClick = {
+                onEvent.invoke(
+                    BudgetPageEvent.AddTransactionToExpenseClicked(
+                        expenseItem
+                    )
+                )
+            }, onLongClick = {
+                onEvent.invoke(
+                    BudgetPageEvent.EditExpenseClicked(expenseItem)
+                )
+
+            }),
         shape = Shapes.small,
         border = BorderStroke(2.dp, expenseItem.regularity.regularityStyle.backgroundColor)
     ) {

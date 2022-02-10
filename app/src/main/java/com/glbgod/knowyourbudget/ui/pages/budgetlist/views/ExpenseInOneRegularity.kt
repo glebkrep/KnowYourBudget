@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.R
-import com.glbgod.knowyourbudget.core.utils.Utils
 import com.glbgod.knowyourbudget.data.ExpenseCategoryData
 import com.glbgod.knowyourbudget.feature.db.data.ExpenseRegularity
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
@@ -88,12 +87,10 @@ fun ExpenseInOneRegularity(
             for (category in expenseCategoriesData) {
                 ExpenseCategoryItem(
                     listExpenseItem = category.items,
-                    onExpenseClick = {
-                        onReceivedEvent.invoke(BudgetPageEvent.AddTransactionToExpenseClicked(it))
-                    },
-                    onExpenseLongClick = {
-                        onReceivedEvent.invoke(BudgetPageEvent.EditExpenseClicked(it))
-                    })
+                    onEvent = {
+                        onReceivedEvent.invoke(it)
+                    }
+                )
             }
             Text(
                 text = "Next refill in ${expenseCategoriesData.first().items.first().nextRefillInDays} days",

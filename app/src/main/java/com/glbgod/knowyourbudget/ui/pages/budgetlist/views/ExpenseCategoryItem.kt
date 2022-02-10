@@ -10,15 +10,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.data.ExpenseItem
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 
 
 @OptIn(ExperimentalUnitApi::class)
 @Composable
 fun ExpenseCategoryItem(
     listExpenseItem: List<ExpenseItem>,
-    onExpenseClick: (ExpenseItem) -> Unit,
-    onExpenseLongClick: (ExpenseItem) -> Unit,
+    onEvent:(BudgetPageEvent)->(Unit)
 ) {
     Column(
         Modifier
@@ -35,13 +36,10 @@ fun ExpenseCategoryItem(
                 .fillMaxWidth()
         ) {
             for (item in listExpenseItem) {
-                ExpenseItem(
+                com.glbgod.knowyourbudget.ui.pages.budgetlist.views.ExpenseItem(
                     expenseItem = item,
-                    onExpenseClick = {
-                        onExpenseClick.invoke(it)
-                    },
-                    onLongPress = {
-                        onExpenseLongClick.invoke(it)
+                    onEvent = {
+                        onEvent.invoke(it)
                     })
             }
         }
