@@ -26,7 +26,7 @@ fun BudgetPage(
             viewModel.handleEvent(it)
         }
     }
-    if (state is BudgetPageState.ExpenseEditDialog  || state is BudgetPageState.DeleteExpenseConfirmationDialog){
+    if (state is BudgetPageState.ExpenseEditDialog){
         val editState = state as BudgetPageState.ExpenseEditDialog
 
         EditingExpenseDialog(state = (BudgetPageState.NewExpenseDialog(
