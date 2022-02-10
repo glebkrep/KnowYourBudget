@@ -46,9 +46,10 @@ fun ConfirmationDialog(header:String,text:String,onCancel:()->(Unit),onAccept:()
                             fontWeight = FontWeight.Medium,
                             color = Color.Black,
                             fontSize = 20.sp,
+                            textAlign = TextAlign.Center,
                         )
-                        Text(text = text, Modifier.padding(top = 16.dp))
                     }
+                    Text(text = text,textAlign=TextAlign.Center,modifier= Modifier.fillMaxWidth().padding(top = 16.dp))
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     Text(
