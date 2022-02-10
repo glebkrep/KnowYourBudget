@@ -16,7 +16,7 @@ sealed class BudgetPageEvent {
     object DialogDismissed : BudgetPageEvent()
 
     data class AddTransactionToExpenseClicked(val expenseItem: ExpenseItem) : BudgetPageEvent()
-    data class AddTransactionToExpenseFinished(val newTransactionModel: TransactionModel) :
+    data class AddTransactionToExpenseFinished(val expenseItem:ExpenseItem, val sum:Int, val comment:String) :
         BudgetPageEvent()
 
     data class DeleteExpenseClicked(val expenseModel: ExpenseModel) : BudgetPageEvent()

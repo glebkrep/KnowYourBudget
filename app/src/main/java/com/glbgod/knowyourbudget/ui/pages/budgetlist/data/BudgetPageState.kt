@@ -1,9 +1,6 @@
 package com.glbgod.knowyourbudget.ui.pages.budgetlist.data
 
-import com.glbgod.knowyourbudget.data.ExpenseEditData
-import com.glbgod.knowyourbudget.data.ExpensesData
-import com.glbgod.knowyourbudget.data.TotalBudgetData
-import com.glbgod.knowyourbudget.data.TransactionEditData
+import com.glbgod.knowyourbudget.data.*
 
 sealed class BudgetPageState(val totalBudgetData: TotalBudgetData, val expensesData: ExpensesData) {
     data class NoDialogs(private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData) :
@@ -29,8 +26,7 @@ sealed class BudgetPageState(val totalBudgetData: TotalBudgetData, val expensesD
     ) : BudgetPageState(_totalBudgetData, _expensesData)
 
     data class AddTransactionDialog(
-        val transactionEditData: TransactionEditData,
-        val newExpenseData: ExpenseEditData,
+        val expenseItem: ExpenseItem,
         private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData
     ) : BudgetPageState(_totalBudgetData, _expensesData)
 

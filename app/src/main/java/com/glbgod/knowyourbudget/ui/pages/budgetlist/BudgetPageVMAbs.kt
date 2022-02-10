@@ -23,8 +23,9 @@ abstract class BudgetPageVMAbs(application: Application) :
     protected fun recalculateData(
         expenseModelsRaw: List<ExpenseWithTransactionsModel>,
     ) {
-        expenseModelsRaw.forEach{ expenseWithTransactionsModelRaw ->
-            expenseWithTransactionsModelRaw.transactions = expenseWithTransactionsModelRaw.transactions.filter {it.time>=PreferencesProvider.getCycleStartTime()}
+        expenseModelsRaw.forEach { expenseWithTransactionsModelRaw ->
+            expenseWithTransactionsModelRaw.transactions =
+                expenseWithTransactionsModelRaw.transactions.filter { it.time >= PreferencesProvider.getCycleStartTime() }
         }
         val expenseModels = expenseModelsRaw
         //todo transactions should be filtered by this time
@@ -120,7 +121,12 @@ abstract class BudgetPageVMAbs(application: Application) :
             }
 
         var progressBarFloat =
-            currentBalanceForPeriod.toFloat() / expenseWithTransactionsModel.expense.budgetPerRegularity.toFloat()
+            currentBalanceForPeriod.toFloat() /
+                    (if (expenseWithTransactionsModel.expense.expenseId == 1) {
+                        PreferencesProvider.getMonthStartBalance() - moneyOccupiedByAllExpenses
+                    } else {
+                        expenseWithTransactionsModel.expense.budgetPerRegularity.toFloat()
+                    }).toFloat()
         if (progressBarFloat > 1f) {
             progressBarFloat = 1f
         }

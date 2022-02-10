@@ -15,7 +15,6 @@ import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
@@ -95,19 +94,13 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 )
             }
             is BudgetPageEvent.AddTransactionToExpenseClicked -> {
-                Debug.log("adding transaction")
-                val addTransactionEvent: BudgetPageEvent.AddTransactionToExpenseClicked = event
-                viewModelScope.launch(Dispatchers.IO) {
-                    budgetRepository.insertTransaction(
-                        TransactionModel(
-                            parentExpenseId = addTransactionEvent.expenseItem.id,
-                            expenseName = addTransactionEvent.expenseItem.name,
-                            change = -125,
-                            time = System.currentTimeMillis(),
-                            transactionCategory = TransactionCategory.SPENT.category
-                        )
+                postState(
+                    BudgetPageState.AddTransactionDialog(
+                        expenseItem = event.expenseItem,
+                        _totalBudgetData = getCurrentStateNotNull().totalBudgetData,
+                        _expensesData = getCurrentStateNotNull().expensesData
                     )
-                }
+                )
             }
             is BudgetPageEvent.AddExpenseClicked -> {
                 Debug.log("adding expense")
@@ -125,7 +118,19 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 }
             }
             is BudgetPageEvent.AddTransactionToExpenseFinished -> {
-                TODO()
+                Debug.log("adding transaction")
+                viewModelScope.launch(Dispatchers.IO) {
+                    budgetRepository.insertTransaction(
+                        TransactionModel(
+                            parentExpenseId = event.expenseItem.id,
+                            expenseName = event.expenseItem.name,
+                            change = -event.sum,
+                            comment = event.comment,
+                            time = System.currentTimeMillis(),
+                            transactionCategory = TransactionCategory.SPENT.category
+                        )
+                    )
+                }
             }
             is BudgetPageEvent.DeleteExpenseClicked -> {
                 TODO()
@@ -148,10 +153,9 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 TODO()
             }
             is BudgetPageEvent.EditTotalBalanceFinished -> {
-                if (event.isRestart){
+                if (event.isRestart) {
                     restartBudget(event.balanceAdded)
-                }
-                else {
+                } else {
                     viewModelScope.launch(Dispatchers.IO) {
                         budgetRepository.insertTransaction(
                             TransactionModel(

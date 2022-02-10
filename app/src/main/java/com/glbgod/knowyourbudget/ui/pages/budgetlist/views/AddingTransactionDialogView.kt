@@ -1,18 +1,18 @@
 package com.glbgod.knowyourbudget.ui.pages.budgetlist.views
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Card
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -24,17 +24,20 @@ import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.MyColors
+import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MoneyIncomeDialog(
-    state: BudgetPageState.EditTotalBalanceDialog,
+fun AddingTransactionDialogView(
+    state: BudgetPageState.AddTransactionDialog,
     onEvent: (BudgetPageEvent) -> (Unit)
 ) {
     var sumInput by remember { mutableStateOf("") }
     var sumError by remember { mutableStateOf("") }
 
-    var isRestart by remember { mutableStateOf(false) }
+    var commentInput by remember {
+        mutableStateOf("")
+    }
 
     Dialog(onDismissRequest = {
         onEvent.invoke(BudgetPageEvent.DialogDismissed)
@@ -42,25 +45,64 @@ fun MoneyIncomeDialog(
         Card(
             Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-            , shape = RoundedCornerShape(16.dp)
+                .padding(16.dp), shape = RoundedCornerShape(16.dp)
         ) {
             Column(Modifier.fillMaxWidth()) {
                 Column(
                     Modifier
+                        .background(UiConsts.iconsMap.get(state.expenseItem.iconResId)!!.backgroundColor)
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
+
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                         Text(
-                            text = "Пополенение баланса",
+                            text = state.expenseItem.name,
                             fontWeight = FontWeight.Medium,
+                            color = UiConsts.iconsMap.get(state.expenseItem.iconResId)!!.textColor,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(16.dp)
                         )
                     }
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = state.expenseItem.iconResId),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(start = 4.dp, end = 8.dp)
+                                .size(32.dp)
+                        )
+                        Column(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(end = 4.dp)
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.Start,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = state.expenseItem.currentBalanceForPeriod.toBeautifulString() + "/" + state.expenseItem.totalBalanceForPeriod.toBeautifulString(),
+                                    Modifier,
+                                    fontSize = 15.sp
+                                )
+                            }
+                            LinearProgressIndicator(
+                                progress = state.expenseItem.progressFloat,
+                                Modifier.fillMaxWidth(),
+                                color = if (state.expenseItem.progressFloat > 0.7f) MyColors.ProgressGood else MyColors.ProgressMedium,
+                                backgroundColor = MyColors.ProgressBackground
+                            )
+                        }
+                    }
+
+
                     Text(
-                        text = "Сумма пополнения",
+                        text = "Сумма",
                         fontSize = 18.sp,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
@@ -80,14 +122,19 @@ fun MoneyIncomeDialog(
                         modifier = Modifier.padding(bottom = 8.dp),
                         isError = sumError != "",
                     )
+
                     Text(
-                        text = "Начать новый цикл?",
+                        text = "Комментарий",
                         fontSize = 18.sp,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Checkbox(checked = isRestart, onCheckedChange = {
-                        isRestart = it
-                    })
+                    TextField(
+                        value = commentInput.toString(),
+                        onValueChange = { newVal: String ->
+                            commentInput = newVal
+                        },
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -104,6 +151,7 @@ fun MoneyIncomeDialog(
                             }
                             .padding(16.dp)
                     )
+
                     Text(
                         text = "Сохранить",
                         textAlign = TextAlign.Center,
@@ -113,8 +161,16 @@ fun MoneyIncomeDialog(
                             .weight(1f)
                             .background(MyColors.ButtonGreen)
                             .clickable {
-                                if (sumError!="") return@clickable
-                                onEvent.invoke(BudgetPageEvent.EditTotalBalanceFinished(sumInput.replace(" ","").toInt(),isRestart))
+                                if (sumError != "") return@clickable
+                                onEvent.invoke(
+                                    BudgetPageEvent.AddTransactionToExpenseFinished(
+                                        sum = sumInput
+                                            .replace(" ", "")
+                                            .toInt(),
+                                        expenseItem = state.expenseItem,
+                                        comment = commentInput
+                                    )
+                                )
                             }
                             .padding(16.dp)
                     )

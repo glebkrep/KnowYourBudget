@@ -8,10 +8,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
-import com.glbgod.knowyourbudget.ui.pages.budgetlist.views.BudgetTopBar
-import com.glbgod.knowyourbudget.ui.pages.budgetlist.views.ExpenseInOneRegularity
-import com.glbgod.knowyourbudget.ui.pages.budgetlist.views.ExpensesPageView
-import com.glbgod.knowyourbudget.ui.pages.budgetlist.views.MoneyIncomeDialog
+import com.glbgod.knowyourbudget.ui.pages.budgetlist.views.*
 
 @Composable
 fun BudgetPage(
@@ -24,6 +21,14 @@ fun BudgetPage(
         MoneyIncomeDialog(state as BudgetPageState.EditTotalBalanceDialog){
             viewModel.handleEvent(it)
         }
+    }
+    if (state is BudgetPageState.AddTransactionDialog){
+        AddingTransactionDialogView(
+            state = (state as BudgetPageState.AddTransactionDialog),
+            onEvent = {
+                viewModel.handleEvent(it)
+            }
+        )
     }
     ExpensesPageView(viewModel = viewModel, state = state!!)
 

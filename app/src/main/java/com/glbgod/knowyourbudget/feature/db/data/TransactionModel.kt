@@ -13,6 +13,8 @@ data class TransactionModel(
     val parentExpenseId: Int,
     @ColumnInfo(name = "expense_name")
     val expenseName: String,
+    @ColumnInfo(name = "comment")
+    val comment: String="",
     @ColumnInfo(name = "change")
     val change: Int,
     @ColumnInfo(name = "time")
