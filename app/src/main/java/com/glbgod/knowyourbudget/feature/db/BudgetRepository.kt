@@ -12,6 +12,7 @@ class BudgetRepository(
     fun getAllExpensesFlow() = expensesDao.getAllItemsFlow()
 
     suspend fun getAllTransactionsFromDate(dateTime:Long) = transactionsDao.getAllItemsFromDate(dateTime)
+    suspend fun getAllTransactionsForExpense(expense: ExpenseItem) = transactionsDao.getAllTransactionsForExpense(expense.id)
 
     suspend fun insertTransaction(transactionModel: TransactionModel) {
         transactionsDao.insert(transactionModel)
@@ -30,8 +31,8 @@ class BudgetRepository(
         )
     }
 
-    suspend fun fakeDeleteExpense(expense:ExpenseItem){
-        expensesDao.fakeDeleteExpense(id=expense.id)
+    suspend fun deleteExpense(expense:ExpenseItem){
+        expensesDao.deleteExpense(id=expense.id)
     }
 
 }

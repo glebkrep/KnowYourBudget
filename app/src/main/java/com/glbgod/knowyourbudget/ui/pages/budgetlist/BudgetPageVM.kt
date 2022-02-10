@@ -252,7 +252,19 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 val state =
                     getCurrentStateNotNull() as BudgetPageState.DeleteExpenseConfirmationDialog
                 if (event.isSuccess) {
-                    TODO()
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val allTransactions = budgetRepository.getAllTransactionsForExpense(event.expenseItem)
+                        Debug.log("transactions for ${event.expenseItem.name}: ${allTransactions.map { it.change.toString() }}")
+                        for (transaction in allTransactions){
+                            budgetRepository.insertTransaction(
+                                transactionModel = transaction.copy(
+                                    id = 0,
+                                    parentExpenseId = 1
+                                )
+                            )
+                        }
+                        budgetRepository.deleteExpense(event.expenseItem)
+                    }
                 } else {
                     postState(
                         BudgetPageState.ExpenseEditDialog(
