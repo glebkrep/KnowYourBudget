@@ -1,12 +1,9 @@
 package com.glbgod.knowyourbudget.ui.pages.budgetlist
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.views.*
 
@@ -19,6 +16,12 @@ fun BudgetPage(
     if (state == null) return
     if (state is BudgetPageState.EditTotalBalanceDialog){
         MoneyIncomeDialog(state as BudgetPageState.EditTotalBalanceDialog){
+            viewModel.handleEvent(it)
+        }
+    }
+    if (state is BudgetPageState.NewExpenseDialog){
+        AddingExpenseDialog(state = (state as BudgetPageState.NewExpenseDialog)){
+            Debug.log("adding invoked")
             viewModel.handleEvent(it)
         }
     }

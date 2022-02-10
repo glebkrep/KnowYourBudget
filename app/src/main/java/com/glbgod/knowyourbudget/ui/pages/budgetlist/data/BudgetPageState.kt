@@ -7,17 +7,17 @@ sealed class BudgetPageState(val totalBudgetData: TotalBudgetData, val expensesD
         BudgetPageState(_totalBudgetData, _expensesData)
 
     data class ExpenseEditDialog(
-        val newExpenseData: ExpenseEditData,
+        val newExpenseData: AddingExpenseEditData,
         private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData
     ) : BudgetPageState(_totalBudgetData, _expensesData)
 
     data class DeleteExpenseConfirmationDialog(
-        val expenseData: ExpenseEditData,
+        val expenseData: AddingExpenseEditData,
         private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData
     ) : BudgetPageState(_totalBudgetData, _expensesData)
 
-    data class NewExpenseEditDialog(
-        val newExpenseData: ExpenseEditData,
+    data class NewExpenseDialog(
+        val newExpenseData: AddingExpenseEditData,
         private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData
     ) : BudgetPageState(_totalBudgetData, _expensesData)
 

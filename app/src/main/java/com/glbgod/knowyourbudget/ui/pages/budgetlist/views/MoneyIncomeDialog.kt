@@ -35,6 +35,7 @@ fun MoneyIncomeDialog(
 
     MyDialog(
         backgroundColor = Color.LightGray,
+        isAcceptActive = (sumInput.isNotEmpty() && sumError.isEmpty()),
         onDismissRequest = { onEvent.invoke(BudgetPageEvent.DialogDismissed) },
         onYesClicked = {
             if (sumError == "") {

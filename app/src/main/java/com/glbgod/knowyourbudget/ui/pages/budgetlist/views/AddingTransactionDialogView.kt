@@ -37,6 +37,7 @@ fun AddingTransactionDialogView(
 
     MyDialog(
         backgroundColor = UiConsts.iconsMap.get(state.expenseItem.iconResId)!!.backgroundColor,
+        isAcceptActive = (sumInput.isNotEmpty() && sumError.isEmpty()),
         onDismissRequest = { onEvent.invoke(BudgetPageEvent.DialogDismissed) },
         onBackClicked = { onEvent.invoke(BudgetPageEvent.DialogDismissed) },
         onYesClicked = {
