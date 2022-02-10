@@ -11,12 +11,14 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
+import com.glbgod.knowyourbudget.ui.custom.MyTextField
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 
@@ -32,6 +34,7 @@ fun MoneyIncomeDialog(
     var isRestart by remember { mutableStateOf(false) }
 
     MyDialog(
+        backgroundColor = Color.LightGray,
         onDismissRequest = { onEvent.invoke(BudgetPageEvent.DialogDismissed) },
         onYesClicked = {
             if (sumError == "") {
@@ -62,7 +65,7 @@ fun MoneyIncomeDialog(
             fontSize = 18.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        TextField(
+        MyTextField(
             value = sumInput.toString(),
             onValueChange = { newVal: String ->
                 try {

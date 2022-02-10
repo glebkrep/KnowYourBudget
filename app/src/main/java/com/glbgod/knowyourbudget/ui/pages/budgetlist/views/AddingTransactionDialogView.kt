@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
+import com.glbgod.knowyourbudget.ui.custom.MyTextField
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.MyColors
@@ -40,13 +40,17 @@ fun AddingTransactionDialogView(
         onDismissRequest = { onEvent.invoke(BudgetPageEvent.DialogDismissed) },
         onBackClicked = { onEvent.invoke(BudgetPageEvent.DialogDismissed) },
         onYesClicked = {
-            BudgetPageEvent.AddTransactionToExpenseFinished(
-                sum = sumInput
-                    .replace(" ", "")
-                    .toInt(),
-                expenseItem = state.expenseItem,
-                comment = commentInput
-            )
+            if (sumError == "") {
+                onEvent.invoke(
+                    BudgetPageEvent.AddTransactionToExpenseFinished(
+                        sum = sumInput
+                            .replace(" ", "")
+                            .toInt(),
+                        expenseItem = state.expenseItem,
+                        comment = commentInput
+                    )
+                )
+            }
         }) {
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
@@ -100,7 +104,7 @@ fun AddingTransactionDialogView(
             fontSize = 18.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        TextField(
+        MyTextField(
             value = sumInput.toString(),
             onValueChange = { newVal: String ->
                 try {
@@ -122,7 +126,7 @@ fun AddingTransactionDialogView(
             fontSize = 18.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
-        TextField(
+        MyTextField(
             value = commentInput.toString(),
             onValueChange = { newVal: String ->
                 commentInput = newVal
