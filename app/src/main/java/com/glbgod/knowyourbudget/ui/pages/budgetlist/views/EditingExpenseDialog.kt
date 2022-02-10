@@ -16,7 +16,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glbgod.knowyourbudget.R
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
+import com.glbgod.knowyourbudget.data.ExpenseItem
 import com.glbgod.knowyourbudget.feature.db.data.ExpenseModel
 import com.glbgod.knowyourbudget.feature.db.data.ExpenseRegularity
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
@@ -27,9 +29,10 @@ import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 
 @Composable
-fun AddingExpenseDialog(
+fun EditingExpenseDialog(
     state: BudgetPageState.NewExpenseDialog,
-    onEvent: (BudgetPageEvent) -> (Unit)
+    selectedExpense: ExpenseItem? = null,
+    onEvent: (BudgetPageEvent) -> (Unit),
 ) {
 
     var leftoverAfterAddingExpense by remember {
@@ -39,12 +42,16 @@ fun AddingExpenseDialog(
         mutableStateOf<String>("-")
     }
 
-    var selectedIcon by remember { mutableStateOf<Int?>(null) }
-    var name by remember { mutableStateOf("") }
-    var regularityBudget by remember { mutableStateOf("") }
+    var selectedIcon by remember { mutableStateOf<Int?>(selectedExpense?.iconResId) }
+    var name by remember { mutableStateOf(selectedExpense?.name ?: "") }
+    var regularityBudget by remember {
+        mutableStateOf(
+            selectedExpense?.totalBalanceForPeriod.toString() ?: ""
+        )
+    }
     var regularityBudgetError by remember { mutableStateOf("") }
 
-    var selectedCategory by remember { mutableStateOf("") }
+    var selectedCategory by remember { mutableStateOf(selectedExpense?.category ?: "") }
     var dropDownOptions by remember {
         mutableStateOf<List<String>>(state.newExpenseData.categoryList)
     }
@@ -52,11 +59,30 @@ fun AddingExpenseDialog(
         mutableStateOf(false)
     }
 
+    LaunchedEffect(key1 = null, block = {
+        if (selectedIcon != null) {
+            try {
+                val intVal = regularityBudget.toInt()
+                regularityBudget = intVal.toBeautifulString()
+                regularityBudgetError = ""
+                val perMonthTotalInt = state.newExpenseData.regularity.refillsInMonth * intVal
+                perMonthTotal = perMonthTotalInt.toBeautifulString()
+                leftoverAfterAddingExpense =
+                    (state.newExpenseData.freeToUseFunds - perMonthTotalInt).toBeautifulString()
+            } catch (e: Exception) {
+                regularityBudget = regularityBudget
+                regularityBudgetError = "Нужно ввести число"
+                leftoverAfterAddingExpense = "-"
+                perMonthTotal = "-"
+            }
+        }
+    })
+
     MyDialog(
         backgroundColor = state.newExpenseData.regularity.regularityStyle.backgroundColor,
         isAcceptActive = (selectedIcon != null && selectedCategory.isNotEmpty() && name.isNotEmpty()
                 && regularityBudget != "" && regularityBudgetError.isEmpty()
-                && (leftoverAfterAddingExpense.replace(" ", "").toInt() >= 0)),
+                && (leftoverAfterAddingExpense.replace(" ", "").toIntOrNull() ?: -1 >= 0)),
         onDismissRequest = {
             onEvent.invoke(
                 BudgetPageEvent.DialogDismissed
@@ -81,20 +107,52 @@ fun AddingExpenseDialog(
             )
         }) {
 
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            if (selectedExpense != null) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_trash),
+                    contentDescription = "",
+                    tint =
+                    Color.Transparent,
+                    modifier = Modifier
+                        .padding(
+                            start = 4.dp, end = 8.dp
+                        )
+                        .size(22.dp)
+                )
+            }
             Text(
                 text = state.newExpenseData.regularity.text,
                 fontWeight = FontWeight.Medium,
                 color = state.newExpenseData.regularity.regularityStyle.fontColor,
                 fontSize = 20.sp,
-                modifier = Modifier.padding(16.dp)
             )
+            if (selectedExpense != null) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_trash),
+                    contentDescription = "",
+                    tint =
+                    Color.Unspecified,
+                    modifier = Modifier
+                        .padding(
+                            start = 4.dp, end = 8.dp
+                        )
+                        .size(22.dp)
+                        .clickable {
+                            onEvent.invoke(
+                                BudgetPageEvent.DeleteExpenseClicked(
+                                    selectedExpense!!
+                                )
+                            )
+                        }
+                )
+            }
         }
 
         Text(
             text = "Иконка",
             fontSize = 18.sp,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(top=16.dp,bottom = 8.dp)
         )
         LazyRow(
             modifier = Modifier

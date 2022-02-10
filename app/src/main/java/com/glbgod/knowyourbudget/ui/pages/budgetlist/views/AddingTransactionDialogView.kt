@@ -60,12 +60,11 @@ fun AddingTransactionDialogView(
                 fontWeight = FontWeight.Medium,
                 color = UiConsts.iconsMap.get(state.expenseItem.iconResId)!!.textColor,
                 fontSize = 20.sp,
-                modifier = Modifier.padding(16.dp)
             )
         }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top=16.dp)
         ) {
             Image(
                 painter = painterResource(id = state.expenseItem.iconResId),

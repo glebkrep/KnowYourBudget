@@ -58,13 +58,12 @@ fun MoneyIncomeDialog(
                 text = "Пополенение баланса",
                 fontWeight = FontWeight.Medium,
                 fontSize = 20.sp,
-                modifier = Modifier.padding(16.dp)
             )
         }
         Text(
             text = "Сумма пополнения",
             fontSize = 18.sp,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(top=16.dp,bottom = 8.dp)
         )
         MyTextField(
             value = sumInput.toString(),

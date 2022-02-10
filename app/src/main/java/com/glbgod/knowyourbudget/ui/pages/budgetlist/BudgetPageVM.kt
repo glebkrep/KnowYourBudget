@@ -8,7 +8,10 @@ import com.glbgod.knowyourbudget.core.utils.SensetiveData
 import com.glbgod.knowyourbudget.data.AddingExpenseEditData
 import com.glbgod.knowyourbudget.feature.db.BudgetRepository
 import com.glbgod.knowyourbudget.feature.db.BudgetRoomDB
-import com.glbgod.knowyourbudget.feature.db.data.*
+import com.glbgod.knowyourbudget.feature.db.data.ExpenseRegularity
+import com.glbgod.knowyourbudget.feature.db.data.TransactionCategory
+import com.glbgod.knowyourbudget.feature.db.data.TransactionModel
+import com.glbgod.knowyourbudget.feature.db.data.expenseRegularityByRegularityInt
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
@@ -118,35 +121,79 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     val allExpenses =
                         (currentState.expensesData.daily + currentState.expensesData.weekly + currentState.expensesData.monthly)
                     val moneyOccupiedByAllExpenses = allExpenses.map { it.items }.flatten().map {
-                        if (it.id==1) return@map 0
+                        if (it.id == 1) return@map 0
                         it.totalBalanceForPeriod * expenseRegularityByRegularityInt(
                             it.regularity.regularity
                         ).refillsInMonth
                     }.sum()
-                    val freeFunds = PreferencesProvider.getRestartMoney() - moneyOccupiedByAllExpenses
-                        postState(
-                            BudgetPageState.NewExpenseDialog(
-                                newExpenseData = AddingExpenseEditData(
-                                    regularity = expenseRegularityByRegularityInt(regularity),
-                                    iconsIdList = UiConsts.iconsMap.map { it.key },
-                                    categoryList = allCategoriesInRegularity,
-                                    freeToUseFunds = freeFunds
-                                ),
-                                _totalBudgetData = currentState.totalBudgetData,
-                                _expensesData = currentState.expensesData
-                            )
+                    val freeFunds =
+                        PreferencesProvider.getRestartMoney() - moneyOccupiedByAllExpenses
+                    postState(
+                        BudgetPageState.NewExpenseDialog(
+                            newExpenseData = AddingExpenseEditData(
+                                regularity = expenseRegularityByRegularityInt(regularity),
+                                iconsIdList = UiConsts.iconsMap.map { it.key },
+                                categoryList = allCategoriesInRegularity,
+                                freeToUseFunds = freeFunds
+                            ),
+                            _totalBudgetData = currentState.totalBudgetData,
+                            _expensesData = currentState.expensesData
                         )
+                    )
+                }
+            }
+            is BudgetPageEvent.EditExpenseClicked -> {
+                Debug.log("editing expense")
+                val regularity = event.expenseItem.regularity.regularity
+                viewModelScope.launch(Dispatchers.IO) {
+                    val currentState = getCurrentStateNotNull()
+                    val allExpensesInThisRegularity =
+                        when (event.expenseItem.regularity.regularity) {
+                            ExpenseRegularity.DAILY.regularity -> currentState.expensesData.daily
+                            ExpenseRegularity.WEEKLY.regularity -> currentState.expensesData.weekly
+                            else -> currentState.expensesData.monthly
+                        }
+                    val allCategoriesInRegularity =
+                        allExpensesInThisRegularity.map { it.categoryName }
+
+                    val allExpenses =
+                        (currentState.expensesData.daily + currentState.expensesData.weekly + currentState.expensesData.monthly)
+                    val moneyOccupiedByAllExpenses = allExpenses.map { it.items }.flatten().map {
+                        if (it.id == 1) return@map 0
+                        if (it.id == event.expenseItem.id) return@map 0
+                        it.totalBalanceForPeriod * expenseRegularityByRegularityInt(
+                            it.regularity.regularity
+                        ).refillsInMonth
+                    }.sum()
+                    val freeFunds =
+                        PreferencesProvider.getRestartMoney() - moneyOccupiedByAllExpenses
+                    postState(
+                        BudgetPageState.ExpenseEditDialog(
+                            selectedExpense = event.expenseItem,
+                            newExpenseData = AddingExpenseEditData(
+                                regularity = expenseRegularityByRegularityInt(regularity),
+                                iconsIdList = UiConsts.iconsMap.map { it.key },
+                                categoryList = allCategoriesInRegularity,
+                                freeToUseFunds = freeFunds
+                            ),
+                            _totalBudgetData = currentState.totalBudgetData,
+                            _expensesData = currentState.expensesData
+                        )
+                    )
                 }
             }
             is BudgetPageEvent.EditExpenseFinished -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    if (getCurrentStateNotNull() is BudgetPageState.NewExpenseDialog){
+                    if (getCurrentStateNotNull() is BudgetPageState.NewExpenseDialog) {
                         budgetRepository.insertExpense(
                             expenseModel = event.newExpenseModel
                         )
-                    }
-                    else if (getCurrentStateNotNull() is BudgetPageState.ExpenseEditDialog){
-                        TODO()
+                    } else if (getCurrentStateNotNull() is BudgetPageState.ExpenseEditDialog) {
+                        val state = getCurrentStateNotNull() as BudgetPageState.ExpenseEditDialog
+                        budgetRepository.updateExpense(
+                            id = state.selectedExpense.id,
+                            newExpenseModel = event.newExpenseModel
+                        )
                     }
                 }
             }
@@ -191,16 +238,31 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 )
             }
             is BudgetPageEvent.DeleteExpenseClicked -> {
-                TODO()
+                val state = getCurrentStateNotNull() as BudgetPageState.ExpenseEditDialog
+                postState(
+                    BudgetPageState.DeleteExpenseConfirmationDialog(
+                        selectedExpense = state.selectedExpense,
+                        newExpenseData = state.newExpenseData,
+                        _totalBudgetData = state.totalBudgetData,
+                        _expensesData = state.expensesData
+                    )
+                )
             }
-            is BudgetPageEvent.DeleteExpenseSuccess -> {
-                TODO()
-            }
-            is BudgetPageEvent.EditExpenseClicked -> {
-                TODO()
-            }
-            is BudgetPageEvent.OnExpenseOpenCloseClicked -> {
-                TODO()
+            is BudgetPageEvent.DeleteExpenseFinished -> {
+                val state =
+                    getCurrentStateNotNull() as BudgetPageState.DeleteExpenseConfirmationDialog
+                if (event.isSuccess) {
+                    TODO()
+                } else {
+                    postState(
+                        BudgetPageState.ExpenseEditDialog(
+                            selectedExpense = state.selectedExpense,
+                            newExpenseData = state.newExpenseData,
+                            _expensesData = state.expensesData,
+                            _totalBudgetData = state.totalBudgetData
+                        )
+                    )
+                }
             }
             is BudgetPageEvent.SettingsClicked -> {
                 TODO()

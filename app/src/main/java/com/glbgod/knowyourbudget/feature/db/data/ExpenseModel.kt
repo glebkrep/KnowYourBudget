@@ -19,4 +19,6 @@ data class ExpenseModel(
     val category: String,
     @ColumnInfo(name = "budget")
     val budgetPerRegularity: Int,
+    @ColumnInfo(name = "is_deleted")
+    val isDeleted:Boolean = false
 )

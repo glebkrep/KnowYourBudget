@@ -8,10 +8,8 @@ import com.glbgod.knowyourbudget.feature.db.data.TransactionModel
 sealed class BudgetPageEvent {
     object SettingsClicked : BudgetPageEvent()
 
-    data class OnExpenseOpenCloseClicked(val regularity: ExpenseRegularity) : BudgetPageEvent()
-
     data class AddExpenseClicked(val regularity: ExpenseRegularity) : BudgetPageEvent()
-    data class EditExpenseClicked(val expenseModel: ExpenseItem) : BudgetPageEvent()
+    data class EditExpenseClicked(val expenseItem: ExpenseItem) : BudgetPageEvent()
     data class EditExpenseFinished(val newExpenseModel: ExpenseModel) : BudgetPageEvent()
     object DialogDismissed : BudgetPageEvent()
 
@@ -19,8 +17,8 @@ sealed class BudgetPageEvent {
     data class AddTransactionToExpenseFinished(val expenseItem:ExpenseItem, val sum:Int, val comment:String) :
         BudgetPageEvent()
 
-    data class DeleteExpenseClicked(val expenseModel: ExpenseModel) : BudgetPageEvent()
-    data class DeleteExpenseSuccess(val expenseModel: ExpenseModel) : BudgetPageEvent()
+    data class DeleteExpenseClicked(val expenseItem: ExpenseItem) : BudgetPageEvent()
+    data class DeleteExpenseFinished(val expenseItem: ExpenseItem,val isSuccess:Boolean) : BudgetPageEvent()
 
 
     object EditTotalBalanceClicked : BudgetPageEvent()
