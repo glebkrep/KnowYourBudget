@@ -15,10 +15,13 @@ abstract class TransactionsPageVMAbs(application: Application) :
         BaseAction.None
     ) {
     protected fun workWithData(expensesWithTransactions: List<ExpenseWithTransactionsModel>) {
-        val transactions = expensesWithTransactionsToListOfTransactionItems(expensesWithTransactions)
-        postState(TransactionsPageState.DefaultState(
-            transactionItems = transactions
-        ))
+        val transactions =
+            expensesWithTransactionsToListOfTransactionItems(expensesWithTransactions)
+        postState(
+            TransactionsPageState.DefaultState(
+                transactionItems = transactions
+            )
+        )
     }
 
     private fun expensesWithTransactionsToListOfTransactionItems(expensesWithTransactions: List<ExpenseWithTransactionsModel>): List<TransactionItem> {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.glbgod.knowyourbudget.feature.db.data.ExpenseRegularity
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.BudgetPageVM
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 
@@ -22,6 +23,7 @@ fun ExpensesPageView(viewModel: BudgetPageVM, state: BudgetPageState) {
 
         //daily
         ExpenseInOneRegularity(
+            regularity = ExpenseRegularity.DAILY,
             expenseCategoriesData = state.expensesData.daily,
             isOpen = isDailyOpen,
             onReceivedEvent = {
@@ -31,6 +33,7 @@ fun ExpensesPageView(viewModel: BudgetPageVM, state: BudgetPageState) {
         )
         //weekly
         ExpenseInOneRegularity(
+            regularity = ExpenseRegularity.WEEKLY,
             expenseCategoriesData = state.expensesData.weekly,
             isOpen = isWeeklyOpen,
             onReceivedEvent = {
@@ -39,6 +42,7 @@ fun ExpensesPageView(viewModel: BudgetPageVM, state: BudgetPageState) {
             onRegularityClick = { isWeeklyOpen = !isWeeklyOpen })
         //monthly
         ExpenseInOneRegularity(
+            regularity = ExpenseRegularity.MONTHLY,
             expenseCategoriesData = state.expensesData.monthly,
             isOpen = isMonthlyOpen,
             onReceivedEvent = {

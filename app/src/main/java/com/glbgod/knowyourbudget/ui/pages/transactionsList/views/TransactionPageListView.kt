@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import com.glbgod.knowyourbudget.ui.pages.transactionsList.data.TransactionsPageState
 
 @Composable
-fun TransactionPageListView(state:TransactionsPageState.DefaultState) {
-    LazyColumn(Modifier.padding(horizontal = 16.dp)){
-        items(state.transactionItems){
+fun TransactionPageListView(state: TransactionsPageState.DefaultState) {
+    LazyColumn(Modifier.padding(horizontal = 16.dp)) {
+        items(state.transactionItems) {
             TransactionView(it)
         }
     }

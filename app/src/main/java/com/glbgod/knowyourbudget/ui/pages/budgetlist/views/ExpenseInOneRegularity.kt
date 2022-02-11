@@ -25,6 +25,7 @@ import com.glbgod.knowyourbudget.ui.theme.UiConsts
 @OptIn(ExperimentalUnitApi::class, androidx.compose.material.ExperimentalMaterialApi::class)
 @Composable
 fun ExpenseInOneRegularity(
+    regularity: ExpenseRegularity,
     expenseCategoriesData: List<ExpenseCategoryData>,
     isOpen: Boolean,
     onRegularityClick: (ExpenseRegularity) -> (Unit),
@@ -39,9 +40,9 @@ fun ExpenseInOneRegularity(
     ) {
         Card(
             shape = Shapes.small,
-            backgroundColor = expenseCategoriesData.first().regularity.regularityStyle.backgroundColor,
+            backgroundColor = regularity.regularityStyle.backgroundColor,
             onClick = {
-                onRegularityClick.invoke(expenseCategoriesData.first().regularity)
+                onRegularityClick.invoke(regularity)
             }) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -59,11 +60,11 @@ fun ExpenseInOneRegularity(
                         .size(16.dp),
                 )
                 Text(
-                    expenseCategoriesData.first().items.first().regularity.text,
+                    regularity.text,
                     Modifier
                         .padding(UiConsts.padding),
                     fontSize = 20.sp,
-                    color = expenseCategoriesData.first().regularity.regularityStyle.fontColor,
+                    color = regularity.regularityStyle.fontColor,
                     fontWeight = FontWeight.Medium
                 )
                 Image(
@@ -75,7 +76,7 @@ fun ExpenseInOneRegularity(
                         .clickable {
                             onReceivedEvent.invoke(
                                 BudgetPageEvent.AddExpenseClicked(
-                                    expenseCategoriesData.first().regularity
+                                    regularity
                                 )
                             )
                         },
@@ -83,7 +84,7 @@ fun ExpenseInOneRegularity(
             }
         }
 
-        if (isOpen) {
+        if (isOpen && expenseCategoriesData.isNotEmpty()) {
             for (category in expenseCategoriesData) {
                 ExpenseCategoryItem(
                     listExpenseItem = category.items,

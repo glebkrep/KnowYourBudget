@@ -2,16 +2,15 @@ package com.glbgod.knowyourbudget.ui.pages.budgetlist
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
+import com.glbgod.knowyourbudget.BuildConfig
+import com.glbgod.knowyourbudget.R
 import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.core.utils.PreferencesProvider
 import com.glbgod.knowyourbudget.core.utils.SensetiveData
 import com.glbgod.knowyourbudget.data.AddingExpenseEditData
 import com.glbgod.knowyourbudget.feature.db.BudgetRepository
 import com.glbgod.knowyourbudget.feature.db.BudgetRoomDB
-import com.glbgod.knowyourbudget.feature.db.data.ExpenseRegularity
-import com.glbgod.knowyourbudget.feature.db.data.TransactionCategory
-import com.glbgod.knowyourbudget.feature.db.data.TransactionModel
-import com.glbgod.knowyourbudget.feature.db.data.expenseRegularityByRegularityInt
+import com.glbgod.knowyourbudget.feature.db.data.*
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
@@ -29,7 +28,11 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
     init {
         PreferencesProvider.init(application)
         viewModelScope.launch(Dispatchers.IO) {
-            firstStartMock()
+            if (PreferencesProvider.isFirstStart() && BuildConfig.DEBUG && false) {
+                firstStartMock()
+            } else {
+                firstStart()
+            }
             budgetRepository.getAllExpensesFlow()
                 .collect { expenseModels ->
                     recalculateData(expenseModels)
@@ -37,26 +40,39 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
         }
     }
 
-    private suspend fun firstStartMock() {
-        if (PreferencesProvider.isFirstStart()) {
-            Debug.log("expense models empty -> mocking data")
-            val mockData = SensetiveData.firstInitData()
-            for (item in mockData) {
-                budgetRepository.insertExpense(item)
-            }
-            restartBudget(100000)
-            PreferencesProvider.saveNotFirstStart()
+    private fun firstStart() {
+        viewModelScope.launch(Dispatchers.IO) {
+            budgetRepository.insertExpense(
+                ExpenseModel(
+                    expenseId = 0,
+                    name = "Left over money",
+                    regularity = ExpenseRegularity.MONTHLY.regularity,
+                    category = "Other",
+                    budgetPerRegularity = 0,
+                    iconResId = R.drawable.ic_other
+                )
+            )
         }
+        PreferencesProvider.saveNotFirstStart()
     }
 
-    //todo allow selecting restart time!
-    private fun restartBudget(additionalRestartMoney: Int) {
+    private suspend fun firstStartMock() {
+        Debug.log("expense models empty -> mocking data")
+        firstStart()
+        val mockData = SensetiveData.firstInitData()
+        for (item in mockData) {
+            budgetRepository.insertExpense(item)
+        }
+        restartBudget(100000, System.currentTimeMillis())
+    }
+
+    private fun restartBudget(additionalRestartMoney: Int, incomeTime: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             val transactions =
                 budgetRepository.getAllTransactionsFromDate(PreferencesProvider.getCycleStartTime())
                     .map { it.change }
             val currentBalance = transactions.sum()
-            PreferencesProvider.saveCycleStartTime(System.currentTimeMillis())
+            PreferencesProvider.saveCycleStartTime(incomeTime)
             PreferencesProvider.saveRestartMoney(additionalRestartMoney)
             val monthStartBalance = currentBalance + additionalRestartMoney
             PreferencesProvider.saveMonthStartBalance(monthStartBalance)
@@ -66,7 +82,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                         parentExpenseId = 1,
                         comment = "Заработок",
                         change = additionalRestartMoney,
-                        time = System.currentTimeMillis(),
+                        time = incomeTime,
                         transactionCategory = 1
                     )
                 )
@@ -75,7 +91,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                         parentExpenseId = 1,
                         comment = "Переход с прошлого месяца",
                         change = currentBalance,
-                        time = System.currentTimeMillis(),
+                        time = incomeTime,
                         transactionCategory = 1
                     )
                 )
@@ -213,7 +229,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
             }
             is BudgetPageEvent.EditTotalBalanceFinished -> {
                 if (event.isRestart) {
-                    restartBudget(event.balanceAdded)
+                    restartBudget(event.balanceAdded, event.incomeTime)
                 } else {
                     viewModelScope.launch(Dispatchers.IO) {
                         budgetRepository.insertTransaction(
@@ -221,7 +237,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                                 parentExpenseId = 1,
                                 comment = "Дополнительный заработок",
                                 change = event.balanceAdded,
-                                time = System.currentTimeMillis(),
+                                time = event.incomeTime,
                                 transactionCategory = 1
                             )
                         )
@@ -277,7 +293,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 }
             }
             is BudgetPageEvent.SettingsClicked -> {
-                TODO()
+//                TODO()
             }
         }
     }

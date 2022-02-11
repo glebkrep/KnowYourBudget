@@ -52,7 +52,7 @@ fun TransactionView(transactionItem: TransactionItem) {
                     Text(
                         text = transactionItem.moneyChange.toBeautifulString(),
                         fontSize = 15.sp,
-                        color = if (transactionItem.moneyChange>0){
+                        color = if (transactionItem.moneyChange > 0) {
                             MyColors.ProgressGood
                         } else MyColors.ProgressBad
                     )

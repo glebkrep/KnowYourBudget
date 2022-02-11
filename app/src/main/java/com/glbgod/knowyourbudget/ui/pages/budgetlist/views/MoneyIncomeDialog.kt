@@ -16,6 +16,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
+import com.glbgod.knowyourbudget.ui.custom.DatePickerView
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
 import com.glbgod.knowyourbudget.ui.custom.MyTextField
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
@@ -30,6 +31,9 @@ fun MoneyIncomeDialog(
     var sumInput by remember { mutableStateOf("") }
     var sumError by remember { mutableStateOf("") }
 
+    var currentDate by remember { mutableStateOf(System.currentTimeMillis()) }
+
+
     var isRestart by remember { mutableStateOf(false) }
 
     MyDialog(
@@ -42,7 +46,7 @@ fun MoneyIncomeDialog(
                     BudgetPageEvent.EditTotalBalanceFinished(
                         sumInput
                             .replace(" ", "")
-                            .toInt(), isRestart
+                            .toInt(), isRestart,currentDate
                     )
                 )
             }
@@ -80,6 +84,16 @@ fun MoneyIncomeDialog(
             modifier = Modifier.padding(bottom = 8.dp),
             isError = sumError != "",
         )
+        Text(
+            text = "Дата получения",
+            fontSize = 18.sp,
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+        )
+        DatePickerView(currentDate =currentDate, updatedDate ={
+            if (it!=null){
+                currentDate = it
+            }
+        })
         Text(
             text = "Начать новый цикл?",
             fontSize = 18.sp,
