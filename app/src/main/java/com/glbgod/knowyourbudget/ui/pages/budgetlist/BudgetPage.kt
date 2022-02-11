@@ -1,6 +1,7 @@
 package com.glbgod.knowyourbudget.ui.pages.budgetlist
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavController
 import com.glbgod.knowyourbudget.core.utils.Debug
@@ -15,30 +16,32 @@ fun BudgetPage(
 ) {
     val state by viewModel.state.observeAsState()
     if (state == null) return
-    if (state is BudgetPageState.EditTotalBalanceDialog){
-        MoneyIncomeDialog(state as BudgetPageState.EditTotalBalanceDialog){
+    if (state is BudgetPageState.EditTotalBalanceDialog) {
+        MoneyIncomeDialog(state as BudgetPageState.EditTotalBalanceDialog) {
             viewModel.handleEvent(it)
         }
     }
-    if (state is BudgetPageState.NewExpenseDialog){
-        EditingExpenseDialog(state = (state as BudgetPageState.NewExpenseDialog)){
+    if (state is BudgetPageState.NewExpenseDialog) {
+        EditingExpenseDialog(state = (state as BudgetPageState.NewExpenseDialog)) {
             Debug.log("adding invoked")
             viewModel.handleEvent(it)
         }
     }
-    if (state is BudgetPageState.ExpenseEditDialog){
+    if (state is BudgetPageState.ExpenseEditDialog) {
         val editState = state as BudgetPageState.ExpenseEditDialog
 
-        EditingExpenseDialog(state = (BudgetPageState.NewExpenseDialog(
-            editState.newExpenseData,
-            editState.totalBudgetData,
-            editState.expensesData
-        )), selectedExpense = editState.selectedExpense){
+        EditingExpenseDialog(
+            state = (BudgetPageState.NewExpenseDialog(
+                editState.newExpenseData,
+                editState.totalBudgetData,
+                editState.expensesData
+            )), selectedExpense = editState.selectedExpense
+        ) {
             Debug.log("editing invoked")
             viewModel.handleEvent(it)
         }
     }
-    if (state is BudgetPageState.AddTransactionDialog){
+    if (state is BudgetPageState.AddTransactionDialog) {
         AddingTransactionDialogView(
             state = (state as BudgetPageState.AddTransactionDialog),
             onEvent = {
@@ -46,17 +49,25 @@ fun BudgetPage(
             }
         )
     }
-    if (state is BudgetPageState.DeleteExpenseConfirmationDialog){
+    if (state is BudgetPageState.DeleteExpenseConfirmationDialog) {
         val state = state as BudgetPageState.DeleteExpenseConfirmationDialog
-        ConfirmationDialog("Удалить трату","Вы точно хотите удалить трату '${state.selectedExpense.name}'?", onAccept = {
-            viewModel.handleEvent(BudgetPageEvent.DeleteExpenseFinished(
-                expenseItem = state.selectedExpense, isSuccess = true
-            ))
-        }, onCancel = {
-            viewModel.handleEvent(BudgetPageEvent.DeleteExpenseFinished(
-                expenseItem = state.selectedExpense, isSuccess = false
-            ))
-        })
+        ConfirmationDialog(
+            "Удалить трату",
+            "Вы точно хотите удалить трату '${state.selectedExpense.name}'?",
+            onAccept = {
+                viewModel.handleEvent(
+                    BudgetPageEvent.DeleteExpenseFinished(
+                        expenseItem = state.selectedExpense, isSuccess = true
+                    )
+                )
+            },
+            onCancel = {
+                viewModel.handleEvent(
+                    BudgetPageEvent.DeleteExpenseFinished(
+                        expenseItem = state.selectedExpense, isSuccess = false
+                    )
+                )
+            })
     }
     ExpensesPageView(viewModel = viewModel, state = state!!)
 

@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.glbgod.knowyourbudget.ui.Screen
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.BudgetPage
+import com.glbgod.knowyourbudget.ui.pages.transactionsList.TransactionPage
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 
 @Composable
@@ -74,7 +75,7 @@ fun HomePage(
             composable(Screen.Budget.route) {
                 BudgetPage(navController)
             }
-//            composable(Screen.History.route) { TransactionsPage(viewModel) }
+            composable(Screen.History.route) { TransactionPage(navController) }
         }
     }
 }

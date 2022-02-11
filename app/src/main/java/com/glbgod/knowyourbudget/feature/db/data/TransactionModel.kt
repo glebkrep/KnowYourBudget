@@ -11,10 +11,8 @@ data class TransactionModel(
     var id: Int = 0,
     @ColumnInfo(name = "parent_expense_id")
     val parentExpenseId: Int,
-    @ColumnInfo(name = "expense_name")
-    val expenseName: String,
     @ColumnInfo(name = "comment")
-    val comment: String="",
+    val comment: String = "",
     @ColumnInfo(name = "change")
     val change: Int,
     @ColumnInfo(name = "time")

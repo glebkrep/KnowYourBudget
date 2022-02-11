@@ -17,11 +17,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.glbgod.knowyourbudget.ui.theme.MyColors
-import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ConfirmationDialog(header:String,text:String,onCancel:()->(Unit),onAccept:()->(Unit)){
+fun ConfirmationDialog(
+    header: String,
+    text: String,
+    onCancel: () -> (Unit),
+    onAccept: () -> (Unit)
+) {
     Dialog(onDismissRequest = {
         onCancel.invoke()
     }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
@@ -49,7 +53,13 @@ fun ConfirmationDialog(header:String,text:String,onCancel:()->(Unit),onAccept:()
                             textAlign = TextAlign.Center,
                         )
                     }
-                    Text(text = text,textAlign=TextAlign.Center,modifier= Modifier.fillMaxWidth().padding(top = 16.dp))
+                    Text(
+                        text = text,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                    )
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     Text(

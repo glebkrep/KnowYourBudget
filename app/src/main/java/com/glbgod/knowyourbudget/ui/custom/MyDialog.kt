@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.Colors
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -22,7 +21,7 @@ import com.glbgod.knowyourbudget.ui.theme.MyColors
 @Composable
 fun MyDialog(
     backgroundColor: Color = Color.White,
-    isAcceptActive:Boolean,
+    isAcceptActive: Boolean,
     onDismissRequest: () -> (Unit),
     onBackClicked: () -> (Unit),
     onYesClicked: () -> (Unit),
@@ -66,12 +65,16 @@ fun MyDialog(
                         text = "Сохранить",
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp,
-                        color =Color.White,
+                        color = Color.White,
                         modifier = Modifier
                             .weight(1f)
-                            .background(if (isAcceptActive)MyColors.ButtonGreen else Color(0xFFA5A5A5))
+                            .background(
+                                if (isAcceptActive) MyColors.ButtonGreen else Color(
+                                    0xFFA5A5A5
+                                )
+                            )
                             .clickable {
-                                if (isAcceptActive){
+                                if (isAcceptActive) {
                                     onYesClicked.invoke()
                                 }
                             }

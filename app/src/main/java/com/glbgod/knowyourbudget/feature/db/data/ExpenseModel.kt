@@ -20,5 +20,5 @@ data class ExpenseModel(
     @ColumnInfo(name = "budget")
     val budgetPerRegularity: Int,
     @ColumnInfo(name = "is_deleted")
-    val isDeleted:Boolean = false
+    val isDeleted: Boolean = false
 )

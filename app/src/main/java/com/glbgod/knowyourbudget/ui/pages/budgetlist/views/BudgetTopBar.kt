@@ -19,7 +19,7 @@ import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
 @Composable
-fun BudgetTopBar(totalBudgetData: TotalBudgetData,onEvent:(BudgetPageEvent)->(Unit)) {
+fun BudgetTopBar(totalBudgetData: TotalBudgetData, onEvent: (BudgetPageEvent) -> (Unit)) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -73,7 +73,8 @@ fun BudgetTopBar(totalBudgetData: TotalBudgetData,onEvent:(BudgetPageEvent)->(Un
             contentDescription = "",
             modifier = Modifier
                 .padding(start = 4.dp)
-                .size(24.dp).clickable { onEvent.invoke(BudgetPageEvent.SettingsClicked) }
+                .size(24.dp)
+                .clickable { onEvent.invoke(BudgetPageEvent.SettingsClicked) }
         )
     }
 }

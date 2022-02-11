@@ -28,12 +28,6 @@ class MainActivity : ComponentActivity() {
                             Debug.log("Test")
                             HomePage(mainNavController)
                         }
-//                        composable(Screen.Change.route) { ChangePage(mainNavController, viewModel) }
-//                        composable(Screen.ChangeBudget.route) {
-//                            ChangeBudgetPage(
-//                                mainNavController,
-//                                viewModel
-//                            )
                     }
 
                 }

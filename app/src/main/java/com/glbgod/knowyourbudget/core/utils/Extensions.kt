@@ -31,7 +31,7 @@ fun Long.daysPassed(toDate: Long): Long {
 }
 
 fun Long.toDateTime(): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy hh:mm:ss")
+    val formatter = SimpleDateFormat("hh:mm (dd.MM)")
 
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = this

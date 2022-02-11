@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.data.ExpenseItem
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 
@@ -19,7 +18,7 @@ import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 @Composable
 fun ExpenseCategoryItem(
     listExpenseItem: List<ExpenseItem>,
-    onEvent:(BudgetPageEvent)->(Unit)
+    onEvent: (BudgetPageEvent) -> (Unit)
 ) {
     Column(
         Modifier

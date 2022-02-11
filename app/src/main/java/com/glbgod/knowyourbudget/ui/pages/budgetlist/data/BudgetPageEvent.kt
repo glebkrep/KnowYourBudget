@@ -3,7 +3,6 @@ package com.glbgod.knowyourbudget.ui.pages.budgetlist.data
 import com.glbgod.knowyourbudget.data.ExpenseItem
 import com.glbgod.knowyourbudget.feature.db.data.ExpenseModel
 import com.glbgod.knowyourbudget.feature.db.data.ExpenseRegularity
-import com.glbgod.knowyourbudget.feature.db.data.TransactionModel
 
 sealed class BudgetPageEvent {
     object SettingsClicked : BudgetPageEvent()
@@ -14,14 +13,20 @@ sealed class BudgetPageEvent {
     object DialogDismissed : BudgetPageEvent()
 
     data class AddTransactionToExpenseClicked(val expenseItem: ExpenseItem) : BudgetPageEvent()
-    data class AddTransactionToExpenseFinished(val expenseItem:ExpenseItem, val sum:Int, val comment:String) :
+    data class AddTransactionToExpenseFinished(
+        val expenseItem: ExpenseItem,
+        val sum: Int,
+        val comment: String
+    ) :
         BudgetPageEvent()
 
     data class DeleteExpenseClicked(val expenseItem: ExpenseItem) : BudgetPageEvent()
-    data class DeleteExpenseFinished(val expenseItem: ExpenseItem,val isSuccess:Boolean) : BudgetPageEvent()
+    data class DeleteExpenseFinished(val expenseItem: ExpenseItem, val isSuccess: Boolean) :
+        BudgetPageEvent()
 
 
     object EditTotalBalanceClicked : BudgetPageEvent()
-    data class EditTotalBalanceFinished(val balanceAdded: Int, val isRestart:Boolean) : BudgetPageEvent()
+    data class EditTotalBalanceFinished(val balanceAdded: Int, val isRestart: Boolean) :
+        BudgetPageEvent()
 
 }

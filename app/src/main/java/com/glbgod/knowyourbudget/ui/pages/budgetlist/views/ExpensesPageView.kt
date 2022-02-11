@@ -9,7 +9,7 @@ import com.glbgod.knowyourbudget.ui.pages.budgetlist.BudgetPageVM
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 
 @Composable
-fun ExpensesPageView(viewModel:BudgetPageVM,state:BudgetPageState){
+fun ExpensesPageView(viewModel: BudgetPageVM, state: BudgetPageState) {
     val scrollState = rememberScrollState()
     Column(Modifier.verticalScroll(scrollState)) {
         BudgetTopBar(state.totalBudgetData, onEvent = {

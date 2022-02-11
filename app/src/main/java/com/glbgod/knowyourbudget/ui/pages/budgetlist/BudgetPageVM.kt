@@ -26,7 +26,6 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
         BudgetRoomDB.getDatabase(application, viewModelScope).transactionsDao()
     )
 
-    //todo when starting new month copy leftover money as transactions this month
     init {
         PreferencesProvider.init(application)
         viewModelScope.launch(Dispatchers.IO) {
@@ -50,9 +49,9 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
         }
     }
 
+    //todo allow selecting restart time!
     private fun restartBudget(additionalRestartMoney: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            //todo currentBalance
             val transactions =
                 budgetRepository.getAllTransactionsFromDate(PreferencesProvider.getCycleStartTime())
                     .map { it.change }
@@ -65,7 +64,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 budgetRepository.insertTransaction(
                     TransactionModel(
                         parentExpenseId = 1,
-                        expenseName = "Заработок",
+                        comment = "Заработок",
                         change = additionalRestartMoney,
                         time = System.currentTimeMillis(),
                         transactionCategory = 1
@@ -74,7 +73,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 budgetRepository.insertTransaction(
                     TransactionModel(
                         parentExpenseId = 1,
-                        expenseName = "Переход с прошлого месяца",
+                        comment = "Переход с прошлого месяца",
                         change = currentBalance,
                         time = System.currentTimeMillis(),
                         transactionCategory = 1
@@ -145,7 +144,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
             is BudgetPageEvent.EditExpenseClicked -> {
                 Debug.log("editing expense")
                 val regularity = event.expenseItem.regularity.regularity
-                if (event.expenseItem.id==1) return
+                if (event.expenseItem.id == 1) return
                 viewModelScope.launch(Dispatchers.IO) {
                     val currentState = getCurrentStateNotNull()
                     val allExpensesInThisRegularity =
@@ -204,7 +203,6 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     budgetRepository.insertTransaction(
                         TransactionModel(
                             parentExpenseId = event.expenseItem.id,
-                            expenseName = event.expenseItem.name,
                             change = -event.sum,
                             comment = event.comment,
                             time = System.currentTimeMillis(),
@@ -221,7 +219,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                         budgetRepository.insertTransaction(
                             TransactionModel(
                                 parentExpenseId = 1,
-                                expenseName = "Дополнительный заработок",
+                                comment = "Дополнительный заработок",
                                 change = event.balanceAdded,
                                 time = System.currentTimeMillis(),
                                 transactionCategory = 1
@@ -254,9 +252,10 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     getCurrentStateNotNull() as BudgetPageState.DeleteExpenseConfirmationDialog
                 if (event.isSuccess) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        val allTransactions = budgetRepository.getAllTransactionsForExpense(event.expenseItem)
+                        val allTransactions =
+                            budgetRepository.getAllTransactionsForExpense(event.expenseItem)
                         Debug.log("transactions for ${event.expenseItem.name}: ${allTransactions.map { it.change.toString() }}")
-                        for (transaction in allTransactions){
+                        for (transaction in allTransactions) {
                             budgetRepository.insertTransaction(
                                 transactionModel = transaction.copy(
                                     id = 0,

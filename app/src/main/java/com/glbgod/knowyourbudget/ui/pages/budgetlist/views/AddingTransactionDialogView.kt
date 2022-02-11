@@ -64,7 +64,7 @@ fun AddingTransactionDialogView(
         }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top=16.dp)
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 16.dp)
         ) {
             Image(
                 painter = painterResource(id = state.expenseItem.iconResId),

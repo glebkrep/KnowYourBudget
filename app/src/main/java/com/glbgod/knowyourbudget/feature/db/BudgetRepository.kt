@@ -10,9 +10,12 @@ class BudgetRepository(
 ) {
 
     fun getAllExpensesFlow() = expensesDao.getAllItemsFlow()
+    fun getAllTransactionsFlow() = transactionsDao.getAllTransactionsFlow()
+    suspend fun getAllTransactionsFromDate(dateTime: Long) =
+        transactionsDao.getAllItemsFromDate(dateTime)
 
-    suspend fun getAllTransactionsFromDate(dateTime:Long) = transactionsDao.getAllItemsFromDate(dateTime)
-    suspend fun getAllTransactionsForExpense(expense: ExpenseItem) = transactionsDao.getAllTransactionsForExpense(expense.id)
+    suspend fun getAllTransactionsForExpense(expense: ExpenseItem) =
+        transactionsDao.getAllTransactionsForExpense(expense.id)
 
     suspend fun insertTransaction(transactionModel: TransactionModel) {
         transactionsDao.insert(transactionModel)
@@ -22,7 +25,7 @@ class BudgetRepository(
         expensesDao.insert(expenseModel)
     }
 
-    suspend fun updateExpense(id:Int, newExpenseModel:ExpenseModel){
+    suspend fun updateExpense(id: Int, newExpenseModel: ExpenseModel) {
         expensesDao.updateExpense(
             id = id,
             name = newExpenseModel.name,
@@ -31,8 +34,8 @@ class BudgetRepository(
         )
     }
 
-    suspend fun deleteExpense(expense:ExpenseItem){
-        expensesDao.deleteExpense(id=expense.id)
+    suspend fun deleteExpense(expense: ExpenseItem) {
+        expensesDao.deleteExpense(id = expense.id)
     }
 
 }

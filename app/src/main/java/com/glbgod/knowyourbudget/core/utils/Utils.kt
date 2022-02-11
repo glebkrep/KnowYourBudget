@@ -10,7 +10,7 @@ object Utils {
         var weeksPassed = 0
         while (true) {
             weeksPassed += 1
-            time = cycleStart +weeksPassed * 7 * 24 * 60 * 60 * 1000L
+            time = cycleStart + weeksPassed * 7 * 24 * 60 * 60 * 1000L
             if (time > System.currentTimeMillis()) {
                 return System.currentTimeMillis().daysPassed(time).toInt()
             }

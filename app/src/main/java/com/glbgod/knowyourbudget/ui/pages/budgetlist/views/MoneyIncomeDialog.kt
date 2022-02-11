@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -63,7 +62,7 @@ fun MoneyIncomeDialog(
         Text(
             text = "Сумма пополнения",
             fontSize = 18.sp,
-            modifier = Modifier.padding(top=16.dp,bottom = 8.dp)
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
         MyTextField(
             value = sumInput.toString(),

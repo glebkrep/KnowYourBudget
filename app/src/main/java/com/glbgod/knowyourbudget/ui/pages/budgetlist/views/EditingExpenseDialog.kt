@@ -46,7 +46,7 @@ fun EditingExpenseDialog(
     var name by remember { mutableStateOf(selectedExpense?.name ?: "") }
     var regularityBudget by remember {
         mutableStateOf(
-            selectedExpense?.totalBalanceForPeriod.toString() ?: ""
+            selectedExpense?.totalBalanceForPeriod.toString()
         )
     }
     var regularityBudgetError by remember { mutableStateOf("") }
@@ -141,7 +141,7 @@ fun EditingExpenseDialog(
                         .clickable {
                             onEvent.invoke(
                                 BudgetPageEvent.DeleteExpenseClicked(
-                                    selectedExpense!!
+                                    selectedExpense
                                 )
                             )
                         }
@@ -152,7 +152,7 @@ fun EditingExpenseDialog(
         Text(
             text = "Иконка",
             fontSize = 18.sp,
-            modifier = Modifier.padding(top=16.dp,bottom = 8.dp)
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
         LazyRow(
             modifier = Modifier
