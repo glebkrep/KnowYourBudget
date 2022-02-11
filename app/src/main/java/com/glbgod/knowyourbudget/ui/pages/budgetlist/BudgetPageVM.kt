@@ -28,10 +28,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
     init {
         PreferencesProvider.init(application)
         viewModelScope.launch(Dispatchers.IO) {
-            if (PreferencesProvider.isFirstStart() && BuildConfig.DEBUG && false) {
-                firstStartMock()
-            } else {
-                firstStart()
+            if (PreferencesProvider.isFirstStart()){
+                if (BuildConfig.DEBUG && false) {
+                    firstStartMock()
+                } else {
+                    firstStart()
+                }
             }
             budgetRepository.getAllExpensesFlow()
                 .collect { expenseModels ->
