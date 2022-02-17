@@ -12,7 +12,7 @@ interface TransactionDao {
     @Query("select * from TransactionModel where time>=:time order by time desc")
     suspend fun getAllItemsFromDate(time: Long): List<TransactionModel>
 
-    @Query("select * from TransactionModel where parent_expense_id>=:expenseId order by time desc")
+    @Query("select * from TransactionModel where parent_expense_id=:expenseId order by time desc")
     suspend fun getAllTransactionsForExpense(expenseId: Int): List<TransactionModel>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
