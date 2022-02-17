@@ -28,7 +28,6 @@ abstract class BudgetPageVMAbs(application: Application) :
                 expenseWithTransactionsModelRaw.transactions.filter { it.time >= PreferencesProvider.getCycleStartTime() }
         }
         val expenseModels = expenseModelsRaw
-        //todo transactions should be filtered by this time
         val transactions = expenseModels.map { it.transactions }.flatten()
         val totalBudgetData = getTotalBudgetData(transactions)
         val expensesData = getExpensesData(expenseModels)
@@ -162,7 +161,11 @@ abstract class BudgetPageVMAbs(application: Application) :
     private fun getMoneyUnlockedATM(expenseModel: ExpenseModel): Long {
         val regularity = expenseRegularityByRegularityInt(expenseModel.regularity)
         val daysPassed =
-            PreferencesProvider.getCycleStartTime().daysPassed(System.currentTimeMillis())
+            minOf(
+                PreferencesProvider.getCycleStartTime().daysPassed(System.currentTimeMillis()),
+                ExpenseRegularity.DAILY.refillsInMonth.toLong()
+            )
+
         val balancesUnlocked = when (regularity) {
             ExpenseRegularity.DAILY -> daysPassed + 1
             ExpenseRegularity.WEEKLY -> (daysPassed / 7) + 1
