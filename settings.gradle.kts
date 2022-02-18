@@ -7,4 +7,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Know Your Budget"
-include ':app'
+include(":app")
