@@ -4,5 +4,5 @@ import androidx.compose.ui.graphics.Color
 
 data class RegularityStyle(
     val backgroundColor: Color,
-    val fontColor: Color
+    val fontColor: Color,
 )
