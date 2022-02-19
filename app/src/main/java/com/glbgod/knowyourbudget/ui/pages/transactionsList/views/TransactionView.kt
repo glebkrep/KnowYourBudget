@@ -2,6 +2,7 @@ package com.glbgod.knowyourbudget.ui.pages.transactionsList.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Card
 import androidx.compose.material.Text
@@ -14,19 +15,25 @@ import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.core.utils.toDateTime
 import com.glbgod.knowyourbudget.ui.pages.transactionsList.data.TransactionItem
+import com.glbgod.knowyourbudget.ui.pages.transactionsList.data.TransactionsPageEvent
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.Shapes
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
 @Composable
-fun TransactionView(transactionItem: TransactionItem) {
+fun TransactionView(transactionItem: TransactionItem, onEvent: (TransactionsPageEvent) -> (Unit)) {
     Card(
         modifier = Modifier
             .padding(top = 8.dp),
         shape = Shapes.small,
         border = BorderStroke(2.dp, transactionItem.regularity.regularityStyle.backgroundColor)
     ) {
-        Row(Modifier.padding(UiConsts.padding), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier
+                .padding(UiConsts.padding)
+                .clickable {
+                    onEvent.invoke(TransactionsPageEvent.OnTransactionClicked(transactionItem))
+                }, verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = transactionItem.iconResId),
                 contentDescription = "",

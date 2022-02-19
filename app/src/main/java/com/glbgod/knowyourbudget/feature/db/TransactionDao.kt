@@ -15,6 +15,9 @@ interface TransactionDao {
     @Query("select * from TransactionModel where parent_expense_id=:expenseId order by time desc")
     suspend fun getAllTransactionsForExpense(expenseId: Int): List<TransactionModel>
 
+    @Query("update TransactionModel set change=:newValue where id=:transactionId")
+    suspend fun updateTransactionValue(transactionId: Int, newValue: Int)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(transaction: TransactionModel): Long
 

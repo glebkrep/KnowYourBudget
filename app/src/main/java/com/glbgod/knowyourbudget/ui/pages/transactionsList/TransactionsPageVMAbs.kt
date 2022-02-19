@@ -19,7 +19,7 @@ abstract class TransactionsPageVMAbs(application: Application) :
             expensesWithTransactionsToListOfTransactionItems(expensesWithTransactions)
         postState(
             TransactionsPageState.DefaultState(
-                transactionItems = transactions
+                _transactionItems = transactions
             )
         )
     }
