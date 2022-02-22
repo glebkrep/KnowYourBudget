@@ -5,6 +5,6 @@ sealed class SettingsPageEvent {
     object OnDismissDialog : SettingsPageEvent()
     object OnSuccessClearAll : SettingsPageEvent()
     object OnSuccessExport : SettingsPageEvent()
-    object OnSuccessImport : SettingsPageEvent()
+    data class OnSuccessImport(val importData:String) : SettingsPageEvent()
 
 }

@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("kotlin-kapt")
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 android {
@@ -86,4 +87,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     // LiveData
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 }

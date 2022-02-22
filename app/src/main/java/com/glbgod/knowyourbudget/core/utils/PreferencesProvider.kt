@@ -51,6 +51,18 @@ object PreferencesProvider {
         preferences.edit().putBoolean("is_first", false).apply()
     }
 
+
+    fun saveIsFirstStart() {
+        preferences.edit().putBoolean("is_first", true).apply()
+    }
+
+    fun setEverythingToDefault() {
+        saveCycleStartTime(0L)
+        saveRestartMoney(0)
+        saveMonthStartBalance(0)
+        saveIsFirstStart()
+    }
+
     private const val CYCLE_START_TIME = "cycle_start_time"
     private const val STABLE_INCOME = "stable_income"
     private const val MONTH_START_BALACNE = "month_start_balance"

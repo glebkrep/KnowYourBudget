@@ -20,4 +20,11 @@ interface ExpensesDao {
 
     @Query("DELETE from ExpenseModel WHERE id=:id")
     suspend fun deleteExpense(id: Int)
+
+    @Query("DELETE from ExpenseModel")
+    fun clearAll()
+
+    @Query("select * from ExpenseModel")
+    suspend fun getAllItems(): List<ExpenseModel>
+
 }

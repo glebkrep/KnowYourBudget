@@ -27,4 +27,10 @@ interface TransactionDao {
     @Query("select * from TransactionModel order by time desc")
     fun getAllTransactionsFlow(): Flow<List<TransactionModel>>
 
+    @Query("delete from TransactionModel")
+    suspend fun clearAll()
+
+    @Query("select * from TransactionModel")
+    suspend fun getAllItems(): List<TransactionModel>
+
 }

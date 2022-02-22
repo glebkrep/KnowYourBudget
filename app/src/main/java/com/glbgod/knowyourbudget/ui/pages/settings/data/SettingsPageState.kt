@@ -4,9 +4,6 @@ sealed class SettingsPageState(val settingsOptions: List<SettingOption>) {
     data class DefState(private val _settingsOptions: List<SettingOption>) :
         SettingsPageState(_settingsOptions)
 
-    data class SettingsOptions(private val _settingsOptions: List<SettingOption>) :
-        SettingsPageState(_settingsOptions)
-
     data class ClearingAppData(private val _settingsOptions: List<SettingOption>) :
         SettingsPageState(_settingsOptions)
 
