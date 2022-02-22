@@ -1,6 +1,7 @@
 package com.glbgod.knowyourbudget.ui.pages.settings.views
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,7 +20,7 @@ import com.glbgod.knowyourbudget.ui.pages.settings.data.SettingsPageEvent
 fun SettingsPageView(settingOptions: List<SettingOption>, onEvent: (SettingsPageEvent) -> (Unit)) {
     Column(
         Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp)
     ) {
         Text(
