@@ -11,6 +11,8 @@ import com.glbgod.knowyourbudget.data.AddingExpenseEditData
 import com.glbgod.knowyourbudget.feature.db.BudgetRepository
 import com.glbgod.knowyourbudget.feature.db.BudgetRoomDB
 import com.glbgod.knowyourbudget.feature.db.data.*
+import com.glbgod.knowyourbudget.ui.BaseAction
+import com.glbgod.knowyourbudget.ui.Screen
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
@@ -295,7 +297,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 }
             }
             is BudgetPageEvent.SettingsClicked -> {
-//                TODO()
+                postAction(BaseAction.GoAway(Screen.Settings.route))
             }
         }
     }
