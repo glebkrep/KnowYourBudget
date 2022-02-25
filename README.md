@@ -1,3 +1,4 @@
+![This is an image](https://github.com/glebkrep/KnowYourBudget/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 ## _WIP_ KnowYourBudget
 Budgeting android application made for personal use and convenience, since none of the apps on the market fill my needs.
 
