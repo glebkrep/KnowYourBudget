@@ -1,7 +1,7 @@
 ## _WIP_ KnowYourBudget
 Budgeting android application made for personal use and convenience, since none of the apps on the market fill my needs.
 
-### __v0.4 release:__
+### __v0.3 release:__
 __Disclaimer:__ Second version is _slightly_ buggy and is being made for personal use mostly.
 ```
 Raw application with basic functionality neaded to benefit from the app.
