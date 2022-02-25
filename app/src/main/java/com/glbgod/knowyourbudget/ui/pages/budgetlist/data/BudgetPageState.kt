@@ -33,6 +33,10 @@ sealed class BudgetPageState(val totalBudgetData: TotalBudgetData, val expensesD
         private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData
     ) : BudgetPageState(_totalBudgetData, _expensesData)
 
+    data class EditBudgetPlannedDialog(
+        private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData
+    ) : BudgetPageState(_totalBudgetData, _expensesData)
+
     data class AddTransactionDialog(
         val expenseItem: ExpenseItem,
         private val _totalBudgetData: TotalBudgetData, private val _expensesData: ExpensesData

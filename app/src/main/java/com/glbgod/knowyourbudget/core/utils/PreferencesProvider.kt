@@ -21,11 +21,11 @@ object PreferencesProvider {
     fun saveCycleStartTime(time: Long) =
         preferences.edit().putLong(CYCLE_START_TIME, time).apply()
 
-    fun saveRestartMoney(money: Int) {
+    fun savePlannedTotalBudget(money: Int) {
         preferences.edit().putInt(STABLE_INCOME, money).apply()
     }
 
-    fun getRestartMoney(): Int {
+    fun getPlannedTotalBudget(): Int {
         return preferences.getInt(
             STABLE_INCOME,
             0
@@ -49,6 +49,18 @@ object PreferencesProvider {
 
     fun saveNotFirstStart() {
         preferences.edit().putBoolean("is_first", false).apply()
+    }
+
+
+    fun saveIsFirstStart() {
+        preferences.edit().putBoolean("is_first", true).apply()
+    }
+
+    fun setEverythingToDefault() {
+        saveCycleStartTime(0L)
+        savePlannedTotalBudget(0)
+        saveMonthStartBalance(0)
+        saveIsFirstStart()
     }
 
     private const val CYCLE_START_TIME = "cycle_start_time"

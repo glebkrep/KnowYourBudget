@@ -53,3 +53,13 @@ fun Int?.toBeautifulString(): String {
         ("$mainPart $remainderZerosString$remainder")
     } else this.toString()
 }
+
+fun String?.firstNOrNull(n: Int): String {
+    if (this == null) return ""
+    val limit = n
+    var finalString = ""
+    for (i in 0 until minOf(this.length, n)) {
+        finalString += this[i]
+    }
+    return finalString
+}

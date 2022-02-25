@@ -3,7 +3,6 @@ package com.glbgod.knowyourbudget.ui.pages.transactionsList.views
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -16,12 +15,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.R
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
-import com.glbgod.knowyourbudget.feature.db.data.ExpenseRegularity
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
 import com.glbgod.knowyourbudget.ui.custom.MyTextField
 import com.glbgod.knowyourbudget.ui.pages.transactionsList.data.TransactionItem
 import com.glbgod.knowyourbudget.ui.pages.transactionsList.data.TransactionsPageEvent
-import com.glbgod.knowyourbudget.ui.theme.MyColors
 import kotlin.math.absoluteValue
 
 @Composable
@@ -38,7 +35,8 @@ fun EditingTransactionDialog(
 
     MyDialog(
         backgroundColor = transactionItem.regularity.regularityStyle.backgroundColor,
-        isAcceptActive = (transactionChangeError.isEmpty() && transactionChange.replace(" ","").toInt() > 0),
+        isAcceptActive = (transactionChangeError.isEmpty() && transactionChange.replace(" ", "")
+            .toInt() > 0),
         onDismissRequest = {
             onEvent.invoke(
                 TransactionsPageEvent.DismissDialog
@@ -52,7 +50,7 @@ fun EditingTransactionDialog(
         onYesClicked = {
             onEvent.invoke(
                 TransactionsPageEvent.OnTransactionEditSuccess(
-                    transactionItem, transactionChange.replace(" ","").toInt()
+                    transactionItem, transactionChange.replace(" ", "").toInt()
                 )
             )
         }) {
@@ -97,7 +95,8 @@ fun EditingTransactionDialog(
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 8.dp)) {
+                .padding(top = 16.dp, bottom = 8.dp)
+        ) {
             TransactionView(transactionItem = transactionItem, onEvent = {
 
             })
@@ -113,11 +112,10 @@ fun EditingTransactionDialog(
             onValueChange = { newVal: String ->
                 try {
                     val intVal = newVal.replace(" ", "").toInt()
-                    if (intVal>0){
+                    if (intVal > 0) {
                         transactionChange = intVal.toBeautifulString()
                         transactionChangeError = ""
-                    }
-                    else {
+                    } else {
                         transactionChange = newVal
                         transactionChangeError = "Нужно ввести число больше 0"
                     }

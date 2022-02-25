@@ -23,6 +23,7 @@ import com.glbgod.knowyourbudget.ui.theme.MyColors
 fun ConfirmationDialog(
     header: String,
     text: String,
+    actionButtonText: String = "Удалить",
     onCancel: () -> (Unit),
     onAccept: () -> (Unit)
 ) {
@@ -76,7 +77,7 @@ fun ConfirmationDialog(
                             .padding(16.dp)
                     )
                     Text(
-                        text = "Удалить",
+                        text = actionButtonText,
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp,
                         color = Color.White,

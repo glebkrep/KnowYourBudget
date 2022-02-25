@@ -8,9 +8,9 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.ui.Screen
 import com.glbgod.knowyourbudget.ui.pages.home.HomePage
+import com.glbgod.knowyourbudget.ui.pages.settings.SettingsPage
 import com.glbgod.knowyourbudget.ui.theme.KnowYourBudgetTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,9 +25,9 @@ class MainActivity : ComponentActivity() {
                         startDestination = Screen.Home.route
                     ) {
                         composable(Screen.Home.route) {
-                            Debug.log("Test")
                             HomePage(mainNavController)
                         }
+                        composable(Screen.Settings.route) { SettingsPage(mainNavController) }
                     }
 
                 }

@@ -46,7 +46,7 @@ fun EditingExpenseDialog(
     var name by remember { mutableStateOf(selectedExpense?.name ?: "") }
     var regularityBudget by remember {
         mutableStateOf(
-            selectedExpense?.totalBalanceForPeriod.toString()
+            selectedExpense?.balancePlannedForPeriod?.toString() ?: ""
         )
     }
     var regularityBudgetError by remember { mutableStateOf("") }
@@ -70,7 +70,6 @@ fun EditingExpenseDialog(
                 leftoverAfterAddingExpense =
                     (state.newExpenseData.freeToUseFunds - perMonthTotalInt).toBeautifulString()
             } catch (e: Exception) {
-                regularityBudget = regularityBudget
                 regularityBudgetError = "Нужно ввести число"
                 leftoverAfterAddingExpense = "-"
                 perMonthTotal = "-"

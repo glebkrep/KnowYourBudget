@@ -35,6 +35,11 @@ class BudgetRepository(
         )
     }
 
+    //Forces flow to emit value to update UI
+    suspend fun fakeUpdateExpense(expenseItem: ExpenseItem) {
+        expensesDao.fakeUpdate(expenseItem.id, expenseItem.name)
+    }
+
     suspend fun deleteExpense(expense: ExpenseItem) {
         expensesDao.deleteExpense(id = expense.id)
     }
@@ -44,7 +49,23 @@ class BudgetRepository(
         transactionsDao.deleteById(id = transactionItem.transactionId)
     }
 
-    suspend fun updateTransaction(transactionItem: TransactionItem,newValue:Int){
+    suspend fun updateTransaction(transactionItem: TransactionItem, newValue: Int) {
         transactionsDao.updateTransactionValue(transactionItem.transactionId, newValue)
+    }
+
+    suspend fun clearAllExpenses() {
+        expensesDao.clearAll()
+    }
+
+    suspend fun clearAllTransactions() {
+        transactionsDao.clearAll()
+    }
+
+    suspend fun getAllExpenses(): List<ExpenseModel> {
+        return expensesDao.getAllItems()
+    }
+
+    suspend fun getAllTransactions(): List<TransactionModel> {
+        return transactionsDao.getAllItems()
     }
 }

@@ -73,9 +73,10 @@ fun HomePage(
             Modifier.padding(innerPadding)
         ) {
             composable(Screen.Budget.route) {
-                BudgetPage(navController)
+                BudgetPage(outterNavController)
             }
-            composable(Screen.History.route) { TransactionPage(navController) }
+            composable(Screen.History.route) { TransactionPage(outterNavController) }
+
         }
     }
 }

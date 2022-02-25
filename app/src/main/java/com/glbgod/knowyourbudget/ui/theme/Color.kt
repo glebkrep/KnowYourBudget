@@ -31,4 +31,7 @@ object MyColors {
 
     val ButtonRed = Color(0xFFA14A4A)
     val ButtonGreen = Color(0xFF3BBD60)
+
+    val Blackish = Color(0xFF424242)
+
 }

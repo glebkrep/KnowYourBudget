@@ -5,10 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -16,37 +14,30 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
-import com.glbgod.knowyourbudget.ui.custom.DatePickerView
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
 import com.glbgod.knowyourbudget.ui.custom.MyTextField
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MoneyIncomeDialog(
-    state: BudgetPageState.EditTotalBalanceDialog,
+fun EditBudgetPlannedDialog(
+    state: BudgetPageState.EditBudgetPlannedDialog,
     onEvent: (BudgetPageEvent) -> (Unit)
 ) {
-    var sumInput by remember { mutableStateOf("") }
-    var sumError by remember { mutableStateOf("") }
-
-    var currentDate by remember { mutableStateOf(System.currentTimeMillis()) }
-
-
-    var isRestart by remember { mutableStateOf(false) }
+    var budgetInput by remember { mutableStateOf<String>(state.totalBudgetData.outOf.toString()) }
+    var budgetError by remember { mutableStateOf("") }
 
     MyDialog(
         backgroundColor = Color.LightGray,
-        isAcceptActive = (sumInput.isNotEmpty() && sumError.isEmpty()),
+        isAcceptActive = (budgetInput.isNotEmpty() && budgetError.isEmpty()),
         onDismissRequest = { onEvent.invoke(BudgetPageEvent.DialogDismissed) },
         onYesClicked = {
-            if (sumError == "") {
+            if (budgetError == "") {
                 onEvent.invoke(
-                    BudgetPageEvent.EditTotalBalanceFinished(
-                        sumInput
+                    BudgetPageEvent.EditBudgetPlannedFinished(
+                        budgetInput
                             .replace(" ", "")
-                            .toInt(), isRestart, currentDate
+                            .toInt()
                     )
                 )
             }
@@ -58,50 +49,32 @@ fun MoneyIncomeDialog(
         }) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
-                text = "Пополенение баланса",
+                text = "Плановый месячный бюджет",
                 fontWeight = FontWeight.Medium,
                 fontSize = 20.sp,
             )
         }
         Text(
-            text = "Сумма пополнения",
+            text = "Сумма бюджета",
             fontSize = 18.sp,
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
         MyTextField(
-            value = sumInput.toString(),
+            value = budgetInput.toString(),
             onValueChange = { newVal: String ->
                 try {
                     val intVal = newVal.replace(" ", "").toInt()
-                    sumInput = intVal.toBeautifulString()
-                    sumError = ""
+                    budgetInput = intVal.toBeautifulString()
+                    budgetError = ""
                 } catch (e: Exception) {
-                    sumInput = newVal
-                    sumError = "Нужно ввести число"
+                    budgetInput = newVal
+                    budgetError = "Нужно ввести число"
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.padding(bottom = 8.dp),
-            isError = sumError != "",
+            isError = budgetError != "",
         )
-        Text(
-            text = "Дата получения",
-            fontSize = 18.sp,
-            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-        )
-        DatePickerView(currentDate = currentDate, updatedDate = {
-            if (it != null) {
-                currentDate = it
-            }
-        })
-        Text(
-            text = "Начать новый цикл?",
-            fontSize = 18.sp,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Checkbox(checked = isRestart, onCheckedChange = {
-            isRestart = it
-        })
     }
 
 }

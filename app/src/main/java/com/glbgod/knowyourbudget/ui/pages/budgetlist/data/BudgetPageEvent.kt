@@ -26,7 +26,22 @@ sealed class BudgetPageEvent {
 
 
     object EditTotalBalanceClicked : BudgetPageEvent()
-    data class EditTotalBalanceFinished(val balanceAdded: Int, val isRestart: Boolean,val incomeTime:Long) :
+    object EditBudgetPlannedClicked : BudgetPageEvent()
+
+    data class EditBudgetPlannedFinished(val newBalance: Int) :
+        BudgetPageEvent()
+
+
+    data class EditTotalBalanceFinished(
+        val balanceAdded: Int,
+        val isRestart: Boolean,
+        val incomeTime: Long
+    ) :
+        BudgetPageEvent()
+
+    data class TransferToLOMFinished(
+        val fromExpenseItem: ExpenseItem
+    ) :
         BudgetPageEvent()
 
 }

@@ -39,7 +39,7 @@ abstract class BudgetPageVMAbs(application: Application) :
 
     private fun getTotalBudgetData(transactionModels: List<TransactionModel>): TotalBudgetData {
         val currentBalance = transactionModels.map { it.change.toLong() }.sum()
-        val restartMoney = PreferencesProvider.getRestartMoney()
+        val restartMoney = PreferencesProvider.getPlannedTotalBudget()
         return TotalBudgetData(currentBalance.toInt(), restartMoney)
     }
 
@@ -114,7 +114,7 @@ abstract class BudgetPageVMAbs(application: Application) :
 
         val totalBalanceLeft =
             if (expenseWithTransactionsModel.expense.expenseId == 1) {
-                currentBalanceForPeriod.toInt()
+                PreferencesProvider.getPlannedTotalBudget() - moneyOccupiedByAllExpenses
             } else {
                 (regularity.refillsInMonth * expenseWithTransactionsModel.expense.budgetPerRegularity) + currentBalanceInTransactions
             }
@@ -144,7 +144,7 @@ abstract class BudgetPageVMAbs(application: Application) :
             regularity = regularity,
             category = expenseWithTransactionsModel.expense.category,
             currentBalanceForPeriod = currentBalanceForPeriod.toInt(),
-            totalBalanceForPeriod =
+            balancePlannedForPeriod =
             if (expenseWithTransactionsModel.expense.expenseId != 1) {
                 expenseWithTransactionsModel.expense.budgetPerRegularity
             } else {

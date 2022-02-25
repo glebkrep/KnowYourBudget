@@ -11,6 +11,8 @@ import com.glbgod.knowyourbudget.data.AddingExpenseEditData
 import com.glbgod.knowyourbudget.feature.db.BudgetRepository
 import com.glbgod.knowyourbudget.feature.db.BudgetRoomDB
 import com.glbgod.knowyourbudget.feature.db.data.*
+import com.glbgod.knowyourbudget.ui.BaseAction
+import com.glbgod.knowyourbudget.ui.Screen
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
@@ -28,7 +30,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
     init {
         PreferencesProvider.init(application)
         viewModelScope.launch(Dispatchers.IO) {
-            if (PreferencesProvider.isFirstStart()){
+            if (PreferencesProvider.isFirstStart()) {
                 if (BuildConfig.DEBUG && false) {
                     firstStartMock()
                 } else {
@@ -75,7 +77,6 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     .map { it.change }
             val currentBalance = transactions.sum()
             PreferencesProvider.saveCycleStartTime(incomeTime)
-            PreferencesProvider.saveRestartMoney(additionalRestartMoney)
             val monthStartBalance = currentBalance + additionalRestartMoney
             PreferencesProvider.saveMonthStartBalance(monthStartBalance)
             viewModelScope.launch(Dispatchers.IO) {
@@ -139,12 +140,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                         (currentState.expensesData.daily + currentState.expensesData.weekly + currentState.expensesData.monthly)
                     val moneyOccupiedByAllExpenses = allExpenses.map { it.items }.flatten().map {
                         if (it.id == 1) return@map 0
-                        it.totalBalanceForPeriod * expenseRegularityByRegularityInt(
+                        it.balancePlannedForPeriod * expenseRegularityByRegularityInt(
                             it.regularity.regularity
                         ).refillsInMonth
                     }.sum()
                     val freeFunds =
-                        PreferencesProvider.getRestartMoney() - moneyOccupiedByAllExpenses
+                        PreferencesProvider.getPlannedTotalBudget() - moneyOccupiedByAllExpenses
                     postState(
                         BudgetPageState.NewExpenseDialog(
                             newExpenseData = AddingExpenseEditData(
@@ -179,12 +180,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     val moneyOccupiedByAllExpenses = allExpenses.map { it.items }.flatten().map {
                         if (it.id == 1) return@map 0
                         if (it.id == event.expenseItem.id) return@map 0
-                        it.totalBalanceForPeriod * expenseRegularityByRegularityInt(
+                        it.balancePlannedForPeriod * expenseRegularityByRegularityInt(
                             it.regularity.regularity
                         ).refillsInMonth
                     }.sum()
                     val freeFunds =
-                        PreferencesProvider.getRestartMoney() - moneyOccupiedByAllExpenses
+                        PreferencesProvider.getPlannedTotalBudget() - moneyOccupiedByAllExpenses
                     postState(
                         BudgetPageState.ExpenseEditDialog(
                             selectedExpense = event.expenseItem,
@@ -216,17 +217,43 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 }
             }
             is BudgetPageEvent.AddTransactionToExpenseFinished -> {
+//                intVal - if (state.expenseItem.currentBalanceForPeriod > 0) state.expenseItem.currentBalanceForPeriod else 0
                 Debug.log("adding transaction")
                 viewModelScope.launch(Dispatchers.IO) {
-                    budgetRepository.insertTransaction(
-                        TransactionModel(
-                            parentExpenseId = event.expenseItem.id,
-                            change = -event.sum,
-                            comment = event.comment,
-                            time = System.currentTimeMillis(),
-                            transactionCategory = TransactionCategory.SPENT.category
+                    val transactionSum = event.sum
+                    val ableToSpendInCategory = event.expenseItem.currentBalanceForPeriod
+                    if (transactionSum>ableToSpendInCategory && event.expenseItem.id!=1){
+                        val putToLOM = transactionSum - if (ableToSpendInCategory>0) ableToSpendInCategory else 0
+                        budgetRepository.insertTransaction(
+                            TransactionModel(
+                                parentExpenseId = event.expenseItem.id,
+                                change = -ableToSpendInCategory,
+                                comment = event.comment,
+                                time = System.currentTimeMillis(),
+                                transactionCategory = TransactionCategory.SPENT.category
+                            )
                         )
-                    )
+                        budgetRepository.insertTransaction(
+                            TransactionModel(
+                                parentExpenseId = 1,
+                                change = -putToLOM,
+                                comment = "[${event.expenseItem.name}]${" "+event.comment}",
+                                time = System.currentTimeMillis(),
+                                transactionCategory = TransactionCategory.SPENT.category
+                            )
+                        )
+                    }
+                    else {
+                        budgetRepository.insertTransaction(
+                            TransactionModel(
+                                parentExpenseId = event.expenseItem.id,
+                                change = -event.sum,
+                                comment = event.comment,
+                                time = System.currentTimeMillis(),
+                                transactionCategory = TransactionCategory.SPENT.category
+                            )
+                        )
+                    }
                 }
             }
             is BudgetPageEvent.EditTotalBalanceFinished -> {
@@ -295,8 +322,49 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 }
             }
             is BudgetPageEvent.SettingsClicked -> {
-//                TODO()
+                postAction(BaseAction.GoAway(Screen.Settings.route))
             }
+            is BudgetPageEvent.EditBudgetPlannedClicked -> {
+                val currentState = getCurrentStateNotNull()
+                postState(
+                    BudgetPageState.EditBudgetPlannedDialog(
+                        _totalBudgetData = currentState.totalBudgetData,
+                        _expensesData = currentState.expensesData
+                    )
+                )
+            }
+            is BudgetPageEvent.EditBudgetPlannedFinished -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val curEvent = event
+                    val currentState = getCurrentStateNotNull()
+                    PreferencesProvider.savePlannedTotalBudget(curEvent.newBalance)
+                    budgetRepository.fakeUpdateExpense(currentState.expensesData.monthly.first().items.first())
+                }
+            }
+            is BudgetPageEvent.TransferToLOMFinished -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val fromItem = event.fromExpenseItem
+                    budgetRepository.insertTransaction(
+                        TransactionModel(
+                            parentExpenseId = fromItem.id,
+                            change = -fromItem.currentBalanceForPeriod,
+                            comment = "Перенос в остаток",
+                            time = System.currentTimeMillis(),
+                            transactionCategory = TransactionCategory.SPENT.category
+                        )
+                    )
+                    budgetRepository.insertTransaction(
+                        TransactionModel(
+                            parentExpenseId = 1,
+                            change = fromItem.currentBalanceForPeriod,
+                            comment = "Перенос из [${fromItem.name}]",
+                            time = System.currentTimeMillis(),
+                            transactionCategory = TransactionCategory.SPENT.category
+                        )
+                    )
+                }
+            }
+
         }
     }
 

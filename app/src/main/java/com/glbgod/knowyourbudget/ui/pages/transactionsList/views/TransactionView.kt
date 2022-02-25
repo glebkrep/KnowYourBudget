@@ -33,7 +33,8 @@ fun TransactionView(transactionItem: TransactionItem, onEvent: (TransactionsPage
                 .padding(UiConsts.padding)
                 .clickable {
                     onEvent.invoke(TransactionsPageEvent.OnTransactionClicked(transactionItem))
-                }, verticalAlignment = Alignment.CenterVertically) {
+                }, verticalAlignment = Alignment.CenterVertically
+        ) {
             Image(
                 painter = painterResource(id = transactionItem.iconResId),
                 contentDescription = "",
