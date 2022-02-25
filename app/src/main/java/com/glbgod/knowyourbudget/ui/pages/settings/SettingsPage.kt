@@ -56,6 +56,7 @@ fun SettingsPage(
             ConfirmationDialog(
                 "Экспортировать данные",
                 "Экспортировать данные приложения и отправить",
+                actionButtonText = "Экспортировать",
                 onAccept = {
                     settingsVM.handleEvent(
                         SettingsPageEvent.OnSuccessExport

@@ -13,6 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.glbgod.knowyourbudget.core.utils.Debug
+import com.glbgod.knowyourbudget.core.utils.firstNOrNull
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
 import com.glbgod.knowyourbudget.ui.custom.MyTextField
@@ -48,7 +50,7 @@ fun SettingsImportDataDialog(onCancel:()->(Unit),onAccept:(String)->(Unit)){
             modifier = Modifier.padding(vertical = 8.dp)
         )
         MyTextField(
-            value = importInput.firstOrNull()?.toString()?:"",
+            value = importInput.firstNOrNull(10),
             onValueChange = { newVal: String ->
                 importInput = newVal
             },
