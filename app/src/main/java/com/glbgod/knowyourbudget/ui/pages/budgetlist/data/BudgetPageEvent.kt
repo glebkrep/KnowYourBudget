@@ -39,4 +39,9 @@ sealed class BudgetPageEvent {
     ) :
         BudgetPageEvent()
 
+    data class TransferToLOMFinished(
+        val fromExpenseItem: ExpenseItem
+    ) :
+        BudgetPageEvent()
+
 }

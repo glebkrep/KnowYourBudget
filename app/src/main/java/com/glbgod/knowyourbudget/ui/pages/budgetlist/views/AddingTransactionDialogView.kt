@@ -1,6 +1,7 @@
 package com.glbgod.knowyourbudget.ui.pages.budgetlist.views
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LinearProgressIndicator
@@ -22,7 +23,10 @@ import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageState
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(
+    ExperimentalComposeUiApi::class,
+    androidx.compose.foundation.ExperimentalFoundationApi::class
+)
 @Composable
 fun AddingTransactionDialogView(
     state: BudgetPageState.AddTransactionDialog,
@@ -66,7 +70,21 @@ fun AddingTransactionDialogView(
         }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 16.dp)
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = {
+                        if (state.expenseItem.id != 1 && state.expenseItem.currentBalanceForPeriod>0) {
+                            onEvent.invoke(
+                                BudgetPageEvent.TransferToLOMFinished(
+                                    state.expenseItem
+                                )
+                            )
+                        }
+                    },
+                )
         ) {
             Image(
                 painter = painterResource(id = state.expenseItem.iconResId),

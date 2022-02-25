@@ -341,6 +341,30 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     budgetRepository.fakeUpdateExpense(currentState.expensesData.monthly.first().items.first())
                 }
             }
+            is BudgetPageEvent.TransferToLOMFinished -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val fromItem = event.fromExpenseItem
+                    budgetRepository.insertTransaction(
+                        TransactionModel(
+                            parentExpenseId = fromItem.id,
+                            change = -fromItem.currentBalanceForPeriod,
+                            comment = "Перенос в остаток",
+                            time = System.currentTimeMillis(),
+                            transactionCategory = TransactionCategory.SPENT.category
+                        )
+                    )
+                    budgetRepository.insertTransaction(
+                        TransactionModel(
+                            parentExpenseId = 1,
+                            change = fromItem.currentBalanceForPeriod,
+                            comment = "Перенос из [${fromItem.name}]",
+                            time = System.currentTimeMillis(),
+                            transactionCategory = TransactionCategory.SPENT.category
+                        )
+                    )
+                }
+            }
+
         }
     }
 
