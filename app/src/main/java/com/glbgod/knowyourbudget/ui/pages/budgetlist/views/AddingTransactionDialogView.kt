@@ -35,6 +35,8 @@ fun AddingTransactionDialogView(
         mutableStateOf("")
     }
 
+    var goingOverTheBudgetWarning by remember { mutableStateOf("") }
+
     MyDialog(
         backgroundColor = UiConsts.iconsMap.get(state.expenseItem.iconResId)!!.backgroundColor,
         isAcceptActive = (sumInput.isNotEmpty() && sumError.isEmpty()),
@@ -111,6 +113,10 @@ fun AddingTransactionDialogView(
                     val intVal = newVal.replace(" ", "").toInt()
                     sumInput = intVal.toBeautifulString()
                     sumError = ""
+                    if (intVal > state.expenseItem.currentBalanceForPeriod && state.expenseItem.currentBalanceForPeriod != 1) {
+                        goingOverTheBudgetWarning =
+                            "${intVal - if (state.expenseItem.currentBalanceForPeriod > 0) state.expenseItem.currentBalanceForPeriod else 0} будет вычтено из LOM"
+                    }
                 } catch (e: Exception) {
                     sumInput = newVal
                     sumError = "Нужно ввести число"
@@ -133,5 +139,13 @@ fun AddingTransactionDialogView(
             },
             modifier = Modifier.padding(bottom = 8.dp)
         )
+        if (goingOverTheBudgetWarning != "") {
+            Text(
+                text = goingOverTheBudgetWarning,
+                fontSize = 16.sp,
+                color = MyColors.ButtonRed,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
     }
 }

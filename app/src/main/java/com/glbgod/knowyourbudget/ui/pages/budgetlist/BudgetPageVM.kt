@@ -217,17 +217,43 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 }
             }
             is BudgetPageEvent.AddTransactionToExpenseFinished -> {
+//                intVal - if (state.expenseItem.currentBalanceForPeriod > 0) state.expenseItem.currentBalanceForPeriod else 0
                 Debug.log("adding transaction")
                 viewModelScope.launch(Dispatchers.IO) {
-                    budgetRepository.insertTransaction(
-                        TransactionModel(
-                            parentExpenseId = event.expenseItem.id,
-                            change = -event.sum,
-                            comment = event.comment,
-                            time = System.currentTimeMillis(),
-                            transactionCategory = TransactionCategory.SPENT.category
+                    val transactionSum = event.sum
+                    val ableToSpendInCategory = event.expenseItem.currentBalanceForPeriod
+                    if (transactionSum>ableToSpendInCategory && event.expenseItem.id!=1){
+                        val putToLOM = transactionSum - if (ableToSpendInCategory>0) ableToSpendInCategory else 0
+                        budgetRepository.insertTransaction(
+                            TransactionModel(
+                                parentExpenseId = event.expenseItem.id,
+                                change = -ableToSpendInCategory,
+                                comment = event.comment,
+                                time = System.currentTimeMillis(),
+                                transactionCategory = TransactionCategory.SPENT.category
+                            )
                         )
-                    )
+                        budgetRepository.insertTransaction(
+                            TransactionModel(
+                                parentExpenseId = 1,
+                                change = -putToLOM,
+                                comment = "[${event.expenseItem.name}]${" "+event.comment}",
+                                time = System.currentTimeMillis(),
+                                transactionCategory = TransactionCategory.SPENT.category
+                            )
+                        )
+                    }
+                    else {
+                        budgetRepository.insertTransaction(
+                            TransactionModel(
+                                parentExpenseId = event.expenseItem.id,
+                                change = -event.sum,
+                                comment = event.comment,
+                                time = System.currentTimeMillis(),
+                                transactionCategory = TransactionCategory.SPENT.category
+                            )
+                        )
+                    }
                 }
             }
             is BudgetPageEvent.EditTotalBalanceFinished -> {
