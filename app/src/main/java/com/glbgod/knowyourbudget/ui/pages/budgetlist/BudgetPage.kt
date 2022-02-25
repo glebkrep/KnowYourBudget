@@ -30,6 +30,11 @@ fun BudgetPage(
             viewModel.handleEvent(it)
         }
     }
+    if (state is BudgetPageState.EditBudgetPlannedDialog) {
+        EditBudgetPlannedDialog(state as BudgetPageState.EditBudgetPlannedDialog) {
+            viewModel.handleEvent(it)
+        }
+    }
     if (state is BudgetPageState.NewExpenseDialog) {
         EditingExpenseDialog(state = (state as BudgetPageState.NewExpenseDialog)) {
             Debug.log("adding invoked")

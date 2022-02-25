@@ -46,7 +46,7 @@ fun EditingExpenseDialog(
     var name by remember { mutableStateOf(selectedExpense?.name ?: "") }
     var regularityBudget by remember {
         mutableStateOf(
-            selectedExpense?.totalBalanceForPeriod.toString()
+            selectedExpense?.balancePlannedForPeriod.toString()
         )
     }
     var regularityBudgetError by remember { mutableStateOf("") }

@@ -30,7 +30,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
     init {
         PreferencesProvider.init(application)
         viewModelScope.launch(Dispatchers.IO) {
-            if (PreferencesProvider.isFirstStart()){
+            if (PreferencesProvider.isFirstStart()) {
                 if (BuildConfig.DEBUG && false) {
                     firstStartMock()
                 } else {
@@ -77,7 +77,6 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     .map { it.change }
             val currentBalance = transactions.sum()
             PreferencesProvider.saveCycleStartTime(incomeTime)
-            PreferencesProvider.saveRestartMoney(additionalRestartMoney)
             val monthStartBalance = currentBalance + additionalRestartMoney
             PreferencesProvider.saveMonthStartBalance(monthStartBalance)
             viewModelScope.launch(Dispatchers.IO) {
@@ -141,12 +140,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                         (currentState.expensesData.daily + currentState.expensesData.weekly + currentState.expensesData.monthly)
                     val moneyOccupiedByAllExpenses = allExpenses.map { it.items }.flatten().map {
                         if (it.id == 1) return@map 0
-                        it.totalBalanceForPeriod * expenseRegularityByRegularityInt(
+                        it.balancePlannedForPeriod * expenseRegularityByRegularityInt(
                             it.regularity.regularity
                         ).refillsInMonth
                     }.sum()
                     val freeFunds =
-                        PreferencesProvider.getRestartMoney() - moneyOccupiedByAllExpenses
+                        PreferencesProvider.getPlannedTotalBudget() - moneyOccupiedByAllExpenses
                     postState(
                         BudgetPageState.NewExpenseDialog(
                             newExpenseData = AddingExpenseEditData(
@@ -181,12 +180,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                     val moneyOccupiedByAllExpenses = allExpenses.map { it.items }.flatten().map {
                         if (it.id == 1) return@map 0
                         if (it.id == event.expenseItem.id) return@map 0
-                        it.totalBalanceForPeriod * expenseRegularityByRegularityInt(
+                        it.balancePlannedForPeriod * expenseRegularityByRegularityInt(
                             it.regularity.regularity
                         ).refillsInMonth
                     }.sum()
                     val freeFunds =
-                        PreferencesProvider.getRestartMoney() - moneyOccupiedByAllExpenses
+                        PreferencesProvider.getPlannedTotalBudget() - moneyOccupiedByAllExpenses
                     postState(
                         BudgetPageState.ExpenseEditDialog(
                             selectedExpense = event.expenseItem,
@@ -298,6 +297,23 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
             }
             is BudgetPageEvent.SettingsClicked -> {
                 postAction(BaseAction.GoAway(Screen.Settings.route))
+            }
+            is BudgetPageEvent.EditBudgetPlannedClicked -> {
+                val currentState = getCurrentStateNotNull()
+                postState(
+                    BudgetPageState.EditBudgetPlannedDialog(
+                        _totalBudgetData = currentState.totalBudgetData,
+                        _expensesData = currentState.expensesData
+                    )
+                )
+            }
+            is BudgetPageEvent.EditBudgetPlannedFinished -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val curEvent = event as BudgetPageEvent.EditBudgetPlannedFinished
+                    val currentState = getCurrentStateNotNull()
+                    PreferencesProvider.savePlannedTotalBudget(curEvent.newBalance)
+                    budgetRepository.fakeUpdateExpense(currentState.expensesData.monthly.first().items.first())
+                }
             }
         }
     }

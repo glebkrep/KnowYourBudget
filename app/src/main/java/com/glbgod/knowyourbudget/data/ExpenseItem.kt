@@ -8,7 +8,7 @@ data class ExpenseItem(
     val regularity: ExpenseRegularity,
     val category: String,
     val currentBalanceForPeriod: Int,
-    val totalBalanceForPeriod: Int,
+    val balancePlannedForPeriod: Int,
     val totalBalanceLeft: Int,
     val iconResId: Int,
     val nextRefillInDays: Int,

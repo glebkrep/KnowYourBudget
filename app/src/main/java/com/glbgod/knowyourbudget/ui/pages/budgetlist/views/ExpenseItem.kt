@@ -66,7 +66,7 @@ fun ExpenseItem(
                 ) {
                     Text(expenseItem.name)
                     Text(
-                        text = expenseItem.currentBalanceForPeriod.toBeautifulString() + "/" + expenseItem.totalBalanceForPeriod.toBeautifulString(),
+                        text = expenseItem.currentBalanceForPeriod.toBeautifulString() + "/" + expenseItem.balancePlannedForPeriod.toBeautifulString(),
                         Modifier,
                         fontSize = 15.sp
                     )
@@ -84,7 +84,7 @@ fun ExpenseItem(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "Остаток на месяц ${expenseItem.totalBalanceLeft.toBeautifulString()}",
+                        text = "${if (expenseItem.id!=1){"Остаток на месяц"} else "Плановый месячный бюджет"}: ${expenseItem.totalBalanceLeft.toBeautifulString()}",
                         fontSize = 12.sp
                     )
                 }

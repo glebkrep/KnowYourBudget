@@ -27,4 +27,6 @@ interface ExpensesDao {
     @Query("select * from ExpenseModel")
     suspend fun getAllItems(): List<ExpenseModel>
 
+    @Query("update ExpenseModel set name=:newName where id=:id")
+    suspend fun fakeUpdate(id:Int,newName:String)
 }

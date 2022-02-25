@@ -1,9 +1,6 @@
 package com.glbgod.knowyourbudget.ui.pages.settings
 
-import android.R
 import android.app.Application
-import android.content.Intent
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.viewModelScope
 import com.glbgod.knowyourbudget.core.utils.PreferencesProvider
 import com.glbgod.knowyourbudget.feature.db.BudgetRepository
@@ -102,7 +99,7 @@ class SettingsVM(application: Application) : SettingsPageVMAbs(application) {
     private fun export() {
         viewModelScope.launch(Dispatchers.IO) {
             val cycleStartTime = PreferencesProvider.getCycleStartTime()
-            val restartMoney = PreferencesProvider.getRestartMoney()
+            val restartMoney = PreferencesProvider.getPlannedTotalBudget()
             val monthStartBalance = PreferencesProvider.getMonthStartBalance()
             val expenses = budgetRepository.getAllExpenses()
             val transactions = budgetRepository.getAllTransactions()
@@ -123,7 +120,7 @@ class SettingsVM(application: Application) : SettingsPageVMAbs(application) {
         val exportData = Json.decodeFromString<ExportData>(importData)
         viewModelScope.launch(Dispatchers.IO) {
             PreferencesProvider.saveCycleStartTime(exportData.cycleStartTime)
-            PreferencesProvider.saveRestartMoney(exportData.restartMoney)
+            PreferencesProvider.savePlannedTotalBudget(exportData.restartMoney)
             PreferencesProvider.saveMonthStartBalance(exportData.monthStartBalance)
             for (expense in exportData.expenses) {
                 budgetRepository.insertExpense(expense)

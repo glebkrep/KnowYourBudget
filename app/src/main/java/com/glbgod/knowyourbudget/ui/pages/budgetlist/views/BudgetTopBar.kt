@@ -1,7 +1,9 @@
 package com.glbgod.knowyourbudget.ui.pages.budgetlist.views
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +20,7 @@ import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BudgetTopBar(totalBudgetData: TotalBudgetData, onEvent: (BudgetPageEvent) -> (Unit)) {
     Row(
@@ -35,9 +38,14 @@ fun BudgetTopBar(totalBudgetData: TotalBudgetData, onEvent: (BudgetPageEvent) ->
             modifier = Modifier
                 .padding(horizontal = 8.dp)
                 .weight(1f)
-                .clickable {
-                    onEvent.invoke(BudgetPageEvent.EditTotalBalanceClicked)
-                }
+                .combinedClickable(
+                    onClick = {
+                        onEvent.invoke(BudgetPageEvent.EditTotalBalanceClicked)
+                    },
+                    onLongClick = {
+                        onEvent.invoke(BudgetPageEvent.EditBudgetPlannedClicked)
+                    }
+                )
         ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

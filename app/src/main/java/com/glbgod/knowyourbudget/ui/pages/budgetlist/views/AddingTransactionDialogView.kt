@@ -84,7 +84,7 @@ fun AddingTransactionDialogView(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = state.expenseItem.currentBalanceForPeriod.toBeautifulString() + "/" + state.expenseItem.totalBalanceForPeriod.toBeautifulString(),
+                        text = state.expenseItem.currentBalanceForPeriod.toBeautifulString() + "/" + state.expenseItem.balancePlannedForPeriod.toBeautifulString(),
                         Modifier,
                         fontSize = 15.sp
                     )

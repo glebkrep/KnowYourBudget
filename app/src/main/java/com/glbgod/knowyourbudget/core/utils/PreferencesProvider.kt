@@ -21,11 +21,11 @@ object PreferencesProvider {
     fun saveCycleStartTime(time: Long) =
         preferences.edit().putLong(CYCLE_START_TIME, time).apply()
 
-    fun saveRestartMoney(money: Int) {
+    fun savePlannedTotalBudget(money: Int) {
         preferences.edit().putInt(STABLE_INCOME, money).apply()
     }
 
-    fun getRestartMoney(): Int {
+    fun getPlannedTotalBudget(): Int {
         return preferences.getInt(
             STABLE_INCOME,
             0
@@ -58,7 +58,7 @@ object PreferencesProvider {
 
     fun setEverythingToDefault() {
         saveCycleStartTime(0L)
-        saveRestartMoney(0)
+        savePlannedTotalBudget(0)
         saveMonthStartBalance(0)
         saveIsFirstStart()
     }
