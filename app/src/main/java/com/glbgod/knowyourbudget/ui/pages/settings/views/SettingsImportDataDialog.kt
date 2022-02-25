@@ -1,29 +1,22 @@
 package com.glbgod.knowyourbudget.ui.pages.settings.views
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.core.utils.firstNOrNull
-import com.glbgod.knowyourbudget.core.utils.toBeautifulString
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
 import com.glbgod.knowyourbudget.ui.custom.MyTextField
-import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent
 import com.glbgod.knowyourbudget.ui.theme.MyColors
-import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
 @Composable
-fun SettingsImportDataDialog(onCancel:()->(Unit),onAccept:(String)->(Unit)){
+fun SettingsImportDataDialog(onCancel: () -> (Unit), onAccept: (String) -> (Unit)) {
     var importInput by remember { mutableStateOf("") }
 
     MyDialog(

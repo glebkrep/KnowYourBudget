@@ -17,9 +17,9 @@ fun TransactionPage(
 ) {
     val state by transactionVM.state.observeAsState()
     if (state == null) return
-    if (state is TransactionsPageState.EditDialog){
+    if (state is TransactionsPageState.EditDialog) {
         val state = state as TransactionsPageState.EditDialog
-        EditingTransactionDialog(state.selectedItem){
+        EditingTransactionDialog(state.selectedItem) {
             transactionVM.handleEvent(it)
         }
     }

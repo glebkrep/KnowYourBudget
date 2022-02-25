@@ -36,8 +36,8 @@ class BudgetRepository(
     }
 
     //Forces flow to emit value to update UI
-    suspend fun fakeUpdateExpense(expenseItem: ExpenseItem){
-        expensesDao.fakeUpdate(expenseItem.id,expenseItem.name)
+    suspend fun fakeUpdateExpense(expenseItem: ExpenseItem) {
+        expensesDao.fakeUpdate(expenseItem.id, expenseItem.name)
     }
 
     suspend fun deleteExpense(expense: ExpenseItem) {

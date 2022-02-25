@@ -84,7 +84,11 @@ fun ExpenseItem(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "${if (expenseItem.id!=1){"Остаток на месяц"} else "Плановый месячный бюджет"}: ${expenseItem.totalBalanceLeft.toBeautifulString()}",
+                        text = "${
+                            if (expenseItem.id != 1) {
+                                "Остаток на месяц"
+                            } else "Плановый месячный бюджет"
+                        }: ${expenseItem.totalBalanceLeft.toBeautifulString()}",
                         fontSize = 12.sp
                     )
                 }

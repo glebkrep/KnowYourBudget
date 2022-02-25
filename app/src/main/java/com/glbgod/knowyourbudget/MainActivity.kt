@@ -8,7 +8,6 @@ import androidx.compose.material.Surface
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.ui.Screen
 import com.glbgod.knowyourbudget.ui.pages.home.HomePage
 import com.glbgod.knowyourbudget.ui.pages.settings.SettingsPage

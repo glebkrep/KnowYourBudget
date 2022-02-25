@@ -28,39 +28,45 @@ class TransactionsVM(application: Application) : TransactionsPageVMAbs(applicati
     }
 
     override fun handleEvent(event: TransactionsPageEvent) {
-        when (event){
+        when (event) {
             is TransactionsPageEvent.DismissDialog -> {
                 val state = getCurrentStateNotNull()
-                postState(TransactionsPageState.DefaultState(
-                    state.transactionItems
-                ))
+                postState(
+                    TransactionsPageState.DefaultState(
+                        state.transactionItems
+                    )
+                )
             }
             is TransactionsPageEvent.OnTransactionClicked -> {
                 val selectedItem = event.transactionItem
                 val state = getCurrentStateNotNull()
-                postState(TransactionsPageState.EditDialog(
-                    selectedItem = selectedItem,
-                    _transactionItems = state.transactionItems
-                ))
+                postState(
+                    TransactionsPageState.EditDialog(
+                        selectedItem = selectedItem,
+                        _transactionItems = state.transactionItems
+                    )
+                )
             }
             is TransactionsPageEvent.OnTransactionDeleteClicked -> {
                 val selectedItem = event.transactionItem
                 val state = getCurrentStateNotNull()
-                postState(TransactionsPageState.DeleteConfirmationDialog(
-                    selectedItem = selectedItem,
-                    _transactionItems = state.transactionItems
-                ))
+                postState(
+                    TransactionsPageState.DeleteConfirmationDialog(
+                        selectedItem = selectedItem,
+                        _transactionItems = state.transactionItems
+                    )
+                )
             }
             is TransactionsPageEvent.OnTransactionDeleteSuccess -> {
                 val selectedItem = event.transactionItem
-                viewModelScope.launch(Dispatchers.IO){
+                viewModelScope.launch(Dispatchers.IO) {
                     budgetRepository.deleteTransaction(selectedItem)
                 }
             }
             is TransactionsPageEvent.OnTransactionEditSuccess -> {
                 val selectedItem = event.transactionItem
                 val newValue = event.newValue
-                viewModelScope.launch(Dispatchers.IO){
+                viewModelScope.launch(Dispatchers.IO) {
                     budgetRepository.updateTransaction(selectedItem, -newValue)
                 }
             }

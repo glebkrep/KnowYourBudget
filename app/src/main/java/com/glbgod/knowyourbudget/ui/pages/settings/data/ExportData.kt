@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ExportData(
-    val cycleStartTime:Long,
-    val restartMoney:Int,
-    val monthStartBalance:Int,
-    val expenses:List<ExpenseModel>,
-    val transactions:List<TransactionModel>
+    val cycleStartTime: Long,
+    val restartMoney: Int,
+    val monthStartBalance: Int,
+    val expenses: List<ExpenseModel>,
+    val transactions: List<TransactionModel>
 )

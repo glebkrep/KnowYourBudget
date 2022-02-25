@@ -10,10 +10,13 @@ import com.glbgod.knowyourbudget.ui.pages.transactionsList.data.TransactionsPage
 import com.glbgod.knowyourbudget.ui.pages.transactionsList.data.TransactionsPageState
 
 @Composable
-fun TransactionPageListView(state: TransactionsPageState,onEvent:(TransactionsPageEvent)->(Unit)) {
+fun TransactionPageListView(
+    state: TransactionsPageState,
+    onEvent: (TransactionsPageEvent) -> (Unit)
+) {
     LazyColumn(Modifier.padding(horizontal = 16.dp)) {
         items(state.transactionItems) { item ->
-            TransactionView(item){
+            TransactionView(item) {
                 onEvent.invoke(it)
             }
         }

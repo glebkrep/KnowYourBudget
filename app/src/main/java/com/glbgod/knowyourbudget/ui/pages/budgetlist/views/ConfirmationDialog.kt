@@ -23,7 +23,7 @@ import com.glbgod.knowyourbudget.ui.theme.MyColors
 fun ConfirmationDialog(
     header: String,
     text: String,
-    actionButtonText:String = "Удалить",
+    actionButtonText: String = "Удалить",
     onCancel: () -> (Unit),
     onAccept: () -> (Unit)
 ) {

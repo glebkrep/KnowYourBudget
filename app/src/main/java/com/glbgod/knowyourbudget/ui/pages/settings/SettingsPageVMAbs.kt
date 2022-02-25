@@ -10,5 +10,4 @@ abstract class SettingsPageVMAbs(application: Application) :
     AbstractPageAndroidVM<SettingsPageEvent, SettingsPageState, BaseAction>(
         application,
         BaseAction.None
-    ) {
-}
+    )

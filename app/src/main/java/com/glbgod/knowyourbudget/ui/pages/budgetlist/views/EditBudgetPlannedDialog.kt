@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,7 +14,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.glbgod.knowyourbudget.core.utils.toBeautifulString
-import com.glbgod.knowyourbudget.ui.custom.DatePickerView
 import com.glbgod.knowyourbudget.ui.custom.MyDialog
 import com.glbgod.knowyourbudget.ui.custom.MyTextField
 import com.glbgod.knowyourbudget.ui.pages.budgetlist.data.BudgetPageEvent

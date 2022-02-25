@@ -46,7 +46,7 @@ fun MoneyIncomeDialog(
                     BudgetPageEvent.EditTotalBalanceFinished(
                         sumInput
                             .replace(" ", "")
-                            .toInt(), isRestart,currentDate
+                            .toInt(), isRestart, currentDate
                     )
                 )
             }
@@ -89,8 +89,8 @@ fun MoneyIncomeDialog(
             fontSize = 18.sp,
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
-        DatePickerView(currentDate =currentDate, updatedDate ={
-            if (it!=null){
+        DatePickerView(currentDate = currentDate, updatedDate = {
+            if (it != null) {
                 currentDate = it
             }
         })

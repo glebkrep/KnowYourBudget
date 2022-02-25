@@ -1,6 +1,5 @@
 package com.glbgod.knowyourbudget.ui.pages.settings
 
-import android.app.Application
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,8 +24,8 @@ fun SettingsPage(
 
     val context = LocalContext.current
     LaunchedEffect(key1 = action, key2 = context, block = {
-        if (action!=null){
-            if (action is BaseAction.GoAway){
+        if (action != null) {
+            if (action is BaseAction.GoAway) {
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.type = "text/plain"
                 intent.putExtra(Intent.EXTRA_TEXT, (action as BaseAction.GoAway).route)
@@ -70,7 +69,7 @@ fun SettingsPage(
         }
         is SettingsPageState.ImportingData -> {
             SettingsImportDataDialog(
-                onAccept = { importData->
+                onAccept = { importData ->
                     settingsVM.handleEvent(
                         SettingsPageEvent.OnSuccessImport(importData)
                     )

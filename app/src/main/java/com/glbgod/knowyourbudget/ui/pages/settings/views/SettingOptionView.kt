@@ -17,7 +17,6 @@ import com.glbgod.knowyourbudget.ui.pages.settings.data.SettingOption
 import com.glbgod.knowyourbudget.ui.pages.settings.data.SettingsPageEvent
 import com.glbgod.knowyourbudget.ui.theme.MyColors
 import com.glbgod.knowyourbudget.ui.theme.Shapes
-import com.glbgod.knowyourbudget.ui.theme.UiConsts
 
 @Composable
 fun SettingOptionView(settingOption: SettingOption, onEvent: (SettingsPageEvent) -> (Unit)) {

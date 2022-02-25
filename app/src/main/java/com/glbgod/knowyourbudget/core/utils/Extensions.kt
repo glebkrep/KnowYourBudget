@@ -54,12 +54,12 @@ fun Int?.toBeautifulString(): String {
     } else this.toString()
 }
 
-fun String?.firstNOrNull(n:Int):String{
+fun String?.firstNOrNull(n: Int): String {
     if (this == null) return ""
     val limit = n
     var finalString = ""
-    for (i in 0 until minOf(this.length,n)){
-        finalString+=this[i]
+    for (i in 0 until minOf(this.length, n)) {
+        finalString += this[i]
     }
     return finalString
 }

@@ -309,7 +309,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
             }
             is BudgetPageEvent.EditBudgetPlannedFinished -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val curEvent = event as BudgetPageEvent.EditBudgetPlannedFinished
+                    val curEvent = event
                     val currentState = getCurrentStateNotNull()
                     PreferencesProvider.savePlannedTotalBudget(curEvent.newBalance)
                     budgetRepository.fakeUpdateExpense(currentState.expensesData.monthly.first().items.first())
