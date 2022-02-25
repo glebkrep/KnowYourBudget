@@ -1,7 +1,7 @@
 ## _WIP_ KnowYourBudget
 Budgeting android application made for personal use and convenience, since none of the apps on the market fill my needs.
 
-### __v0.2 release:__
+### __v0.4 release:__
 __Disclaimer:__ Second version is _slightly_ buggy and is being made for personal use mostly.
 ```
 Raw application with basic functionality neaded to benefit from the app.
@@ -14,10 +14,13 @@ Raw application with basic functionality neaded to benefit from the app.
 - Displaying current total balance 
 - Fancy UI
 - Application Icon
+- Import/Export application data
+- Transfering money from expense to LOM
 ```
 
 
 #### Roadmap:
+- Make import/export format less human-readable
 - Understandable controls
 - Performance improvements
 - Tests
