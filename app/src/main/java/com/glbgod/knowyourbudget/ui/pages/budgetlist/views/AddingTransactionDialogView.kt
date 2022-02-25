@@ -131,7 +131,7 @@ fun AddingTransactionDialogView(
                     val intVal = newVal.replace(" ", "").toInt()
                     sumInput = intVal.toBeautifulString()
                     sumError = ""
-                    if (intVal > state.expenseItem.currentBalanceForPeriod && state.expenseItem.currentBalanceForPeriod != 1) {
+                    if (intVal > state.expenseItem.currentBalanceForPeriod && state.expenseItem.id != 1) {
                         goingOverTheBudgetWarning =
                             "${intVal - if (state.expenseItem.currentBalanceForPeriod > 0) state.expenseItem.currentBalanceForPeriod else 0} будет вычтено из LOM"
                     }
