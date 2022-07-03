@@ -2,11 +2,9 @@ package com.glbgod.knowyourbudget.ui.pages.budgetlist
 
 import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.glbgod.knowyourbudget.BuildConfig
 import com.glbgod.knowyourbudget.R
 import com.glbgod.knowyourbudget.core.utils.Debug
 import com.glbgod.knowyourbudget.core.utils.PreferencesProvider
-import com.glbgod.knowyourbudget.core.utils.SensetiveData
 import com.glbgod.knowyourbudget.data.AddingExpenseEditData
 import com.glbgod.knowyourbudget.feature.db.BudgetRepository
 import com.glbgod.knowyourbudget.feature.db.BudgetRoomDB
@@ -31,11 +29,7 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
         PreferencesProvider.init(application)
         viewModelScope.launch(Dispatchers.IO) {
             if (PreferencesProvider.isFirstStart()) {
-                if (BuildConfig.DEBUG && false) {
-                    firstStartMock()
-                } else {
-                    firstStart()
-                }
+                firstStart()
             }
             budgetRepository.getAllExpensesFlow()
                 .collect { expenseModels ->
@@ -58,16 +52,6 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
             )
         }
         PreferencesProvider.saveNotFirstStart()
-    }
-
-    private suspend fun firstStartMock() {
-        Debug.log("expense models empty -> mocking data")
-        firstStart()
-        val mockData = SensetiveData.firstInitData()
-        for (item in mockData) {
-            budgetRepository.insertExpense(item)
-        }
-        restartBudget(100000, System.currentTimeMillis())
     }
 
     private fun restartBudget(additionalRestartMoney: Int, incomeTime: Long) {
@@ -222,8 +206,9 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                 viewModelScope.launch(Dispatchers.IO) {
                     val transactionSum = event.sum
                     val ableToSpendInCategory = event.expenseItem.currentBalanceForPeriod
-                    if (transactionSum>ableToSpendInCategory && event.expenseItem.id!=1){
-                        val putToLOM = transactionSum - if (ableToSpendInCategory>0) ableToSpendInCategory else 0
+                    if (transactionSum > ableToSpendInCategory && event.expenseItem.id != 1) {
+                        val putToLOM =
+                            transactionSum - if (ableToSpendInCategory > 0) ableToSpendInCategory else 0
                         budgetRepository.insertTransaction(
                             TransactionModel(
                                 parentExpenseId = event.expenseItem.id,
@@ -237,13 +222,12 @@ class BudgetPageVM(application: Application) : BudgetPageVMAbs(application) {
                             TransactionModel(
                                 parentExpenseId = 1,
                                 change = -putToLOM,
-                                comment = "[${event.expenseItem.name}]${" "+event.comment}",
+                                comment = "[${event.expenseItem.name}]${" " + event.comment}",
                                 time = System.currentTimeMillis(),
                                 transactionCategory = TransactionCategory.SPENT.category
                             )
                         )
-                    }
-                    else {
+                    } else {
                         budgetRepository.insertTransaction(
                             TransactionModel(
                                 parentExpenseId = event.expenseItem.id,
